@@ -1,5 +1,5 @@
-// Initialize function handler, app, using Express
-// and apply it to out HTTP server, http
+// Initialize function handler (app) using Express
+// and apply it to our HTTP server (http)
 var app = require('express')();
 var http = require('http').Server(app);
 
