@@ -2,7 +2,7 @@
 <html>
    <head>
       <title>Socket.IO chat</title>
-      <style>
+      <style type="text/css">
          * { margin: 0; padding: 0; box-sizing: border-box; }
          body { font: 13px Helvetica, Arial; }
          form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
@@ -15,13 +15,21 @@
    </head>
    
    <body>
+      <script>
+         // Prompt for user name
+         var user = prompt("Enter your name");
+      </script>
+      
       <ul id="messages"></ul>
       <form action="">
-         <input id="m" autocomplete="off" /><button>Send</button>
+         <input id="m" autofocus="true" autocomplete="off" /><button>Send</button>
       </form>
 
+      <!-- Import Socket.IO and JQuery-->
       <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
       <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+      
+      <!-- Start client-side JavaScript -->
       <script>
           
          // Initialize new Socket.IO instance
@@ -36,8 +44,10 @@
          
          // Retrieve 'chat message' socket and append it to the #messages list
          socket.on('chat message', function(msg) {
-            $('#messages').append($('<li>').text(msg));
+            $('#messages').append($('<li>').text(user + ": " + msg));
          });
       </script>
+      <!-- End client-side JavaScript -->
+      
    </body>
 </html>
