@@ -47,7 +47,7 @@ io.on('connection', function(socket){
 	
 	socket.on('is it on', function(data) {
 	    socket.emit('i am on', data);
-	})
+	});
 });
 
 http.listen(3000, function(){
