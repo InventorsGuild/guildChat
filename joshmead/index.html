@@ -85,7 +85,7 @@
 	  
 	  var clicks = 0;
 	  var darken = false;
-	  var name;
+	  var name = "Guest";
 
 	  $('form').submit(function(){
 		socket.emit('chat message', name + ": \xa0\xa0\xa0\xa0" + $('#m').val());
@@ -150,6 +150,7 @@
 	  
 	  //On page load ---------------------------------
 	  $( document ).ready(function() {
+	  	  $('#connectName').text(name);
 	  	  socket.emit('is it on', "y");
 		  var tempName = getCookie("name");		  
 		  if(tempName != "") {
