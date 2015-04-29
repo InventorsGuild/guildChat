@@ -44,6 +44,10 @@ io.on('connection', function(socket){
 	socket.on('need all connections', function(data) {
 	    socket.emit('all connections', connectedUsersNames);
 	});
+	
+	socket.on('is it on', function(data) {
+	    socket.emit('i am on', data);
+	})
 });
 
 http.listen(3000, function(){
