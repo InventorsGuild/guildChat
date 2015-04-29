@@ -8,7 +8,7 @@
 	  
 	  #header { background: #3B5694; height: 50px; position: relative; top: 0; width: 100%; border-bottom: 1px solid #444; z-index: 8; text-align: center; }
 	  
-	  #circle { position: absolute; background: #00e500; width: 22px; height: 22px; -webkit-border-radius: 11px; -moz-border-radius: 11px; border-radius: 11px; z-index: 9; right: 97%; top: 15px; border: 2px solid #00b200; }
+	  #circle { position: absolute; background: #E60000; width: 22px; height: 22px; -webkit-border-radius: 11px; -moz-border-radius: 11px; border-radius: 11px; z-index: 9; right: 97%; top: 15px; border: 2px solid #B20000; }
 	  
 	  .title { position: relative; vertical-align: top; display: inline-block; }
 	  #connectNameTop { color: #FFF; font-size: 95%; }
@@ -150,6 +150,7 @@
 	  
 	  //On page load ---------------------------------
 	  $( document ).ready(function() {
+	  	  socket.emit('is it on', "pls");
 		  var tempName = getCookie("name");		  
 		  if(tempName != "") {
 		     name = tempName;
@@ -164,7 +165,7 @@
 	  //---------------------------------------------
 	  
 	  
-	  //Listen for sockets identifiers -------------------
+	  //Handle socket identifiers -------------------
 	  socket.on('guest name', function(gName) {
 	      name = gName;
 		  $('#online-users').append($('<li>').text(name));
@@ -181,6 +182,11 @@
 		      $('#online-users').append($('<li>').text(names[i]));
 		  }
 	  });
+	  
+	  socket.on('i am on', function() {
+	     $('#circle').css('background', '#00e500');
+	     $('#circle').css('border', '2px solid #00b200');
+	  }
 	  //------------------------------------------------------
 	  
 	function setCookie(cname, cvalue, exdays) {
