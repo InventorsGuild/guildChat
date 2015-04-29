@@ -2,27 +2,21 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var connectedUsersNames = [];
+var connectedUsers = [];
 var guestIndex = 1;
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
 });
 
-/*io.on('connection', function(socket){
-    console.log('a user connected');
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
-    });
-});*/
-
-io.on('connection', function(socket){
-    //socket.on('join', function(rand) {
-	//   socket.join(rand);
-	//}
-    
+io.on('connection', function(socket){  
     socket.on('disconnect', function(data) {
-	
+	    for(var i=0; i<connectedUsers.length; i++) {
+		    if(socket.id == connectedUsers[i].ID) {
+			    connectedUsers.splice(i, 1);
+				socket.broadcast.emit('all connections', connectedUsers);
+			}
+		}
 	});
    
     socket.on('chat message', function(msg){
@@ -30,23 +24,32 @@ io.on('connection', function(socket){
     });
 	
 	socket.on('have display name', function(name) {
-	    connectedUsersNames[connectedUsersNames.length] = name;
+	    connectedUsers[connectedUsers.length] = {Name: name, ID: socket.id};
 		socket.broadcast.emit('connected user', name);
 	});
 	
 	socket.on('need guest name', function(name) {
 	    var gName = "Guest-" + guestIndex++;
 	    socket.emit('guest name', gName);
-		connectedUsersNames[connectedUsersNames.length] = gName;
+		connectedUsers[connectedUsers.length] = {Name: gName, ID: socket.id};
 		socket.broadcast.emit('connected user', gName); 
 	});
 	
 	socket.on('need all connections', function(data) {
-	    socket.emit('all connections', connectedUsersNames);
+	    socket.emit('all connections', connectedUsers);
 	});
 	
 	socket.on('is it on', function(data) {
 	    socket.emit('i am on', data);
+	});
+	
+	socket.on('new display name', function(name) {
+	    for(var i=0; i<connectedUsers.length; i++) {
+		    if(socket.id == connectedUsers[i].ID) {
+			    connectedUsers[i].Name = name;
+				io.emit('all connections', connectedUsers);
+			}
+		}	    
 	});
 });
 
