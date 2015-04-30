@@ -13,6 +13,7 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(data) {
 	    for(var i=0; i<connectedUsers.length; i++) {
 		    if(socket.id == connectedUsers[i].ID) {
+				socket.broadcast.emit('disconnected user', connectedUsers[i].Name);			
 			    connectedUsers.splice(i, 1);
 				socket.broadcast.emit('all connections', connectedUsers);
 			}
