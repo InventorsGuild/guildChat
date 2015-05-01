@@ -21,7 +21,7 @@ io.on('connection', function(socket){
 	});
    
     socket.on('chat message', function(msg){
-      socket.broadcast.emit('chat message', msg);
+        socket.broadcast.emit('chat message', msg);
     });
 	
 	socket.on('have display name', function(name) {
@@ -38,10 +38,6 @@ io.on('connection', function(socket){
 	
 	socket.on('need all connections', function(data) {
 	    socket.emit('all connections', connectedUsers);
-	});
-	
-	socket.on('is it on', function(data) {
-	    socket.emit('i am on', data);
 	});
 	
 	socket.on('new display name', function(name) {
