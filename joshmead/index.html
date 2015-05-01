@@ -255,6 +255,9 @@
 		  background: #3B5694;
 		  padding-top: 10px; 
 		  padding-bottom: 10px;
+		  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	 
 	   }
 	   
 	   #settingsLabel {
@@ -263,7 +266,7 @@
 	   }
 	   
 	   #nameChangeContainer {
-	      padding-top: 50px; 
+	      padding-top: 40px; 
 	      vertical-align: top; 
 	      display: inline-block;
 	   }
@@ -274,7 +277,7 @@
 	   
 	   #changeNameInput {
 	      padding: 5px; 
-		  width: 70%; 
+		  width: 75%; 
 		  margin-right: 2%; 
 		  margin-left: 3%;
 		  -webkit-border-radius: 5px;
@@ -283,15 +286,79 @@
 		  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);			  
 	   }
 	   
-	   #changeNameButton {
+	   #colorContainer {
+	       width: 400px;
+	   }
+	   
+	   .colorChangeContainer {
+	      vertical-align: bottom;     
+		  margin-left: -83px;
+		  margin-bottom: -10px;
+	   }
+	   
+	   .colorSpanInput {
+		   margin-right: -25px;
+		   vertical-align: top;
+	       display: inline;
+		   margin-right: -5px;
+	   }
+	   
+	   #colorChangeNameSpan {
+	      font-size: 110%;
+		  margin-left: -32px;
+	      padding-top: 20px;
+		  display: block;
+	   }
+	   
+	   #colorChangeTextSpan {
+	      font-size: 110%;
+		  margin-left: -37px;
+	      padding-top: 20px;
+		  display: block;	       
+	   }
+	   
+	   .hex {
+	       font-size: 125%;
+		   margin-right: -9px;
+	   }
+	   
+	   .colorChangeInput {
+	      display: inline-block;
+		  padding: 5px; 
+		  width: 70px; 
+		  margin-right: 2%; 
+		  margin-left: 3%;
+		  -webkit-border-radius: 5px;
+		  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+		  -moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+		  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);	      
+	   }
+	   
+	   .colorPreview {
+	       padding-left: 5px; 
+	       display: inline-block;
+		   position: relative;
+		   height: 28px;
+		   width: 40px;
+		   bottom: 0;
+		   border-radius: 5px; 
+		   -moz-border-radius: 5px; 
+		   -webkit-border-radius: 5px;
+	   }	   
+	   
+	   #changeAllSettingsButton {
+		   display: block;
+		   position: absolute;
+		   bottom: 37px;
+		   right: 30px;
+		   
 	       font: bold 12px/18px sans-serif;
 		   display: inline-block;
 		   margin-right: -4px;
-		   position: relative;
-		   padding: 5px 10px;
+		   padding: 8px 20px;
 		   background: #fff;
 		   cursor: pointer;	    
-		   border: 0;
+		   border: 1px solid rgba(100, 100, 100, 0.3);	
 		   border-radius: 5px; 
 		   -moz-border-radius: 5px; 
 		   -webkit-border-radius: 5px;
@@ -300,11 +367,11 @@
 		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	   
 	   }
 	   
-	   #changeNameButton:hover {
+	   #changeAllSettingsButton:hover {
 	      background: #eee;  
 	   }
 	   
-	   #changeNameButton:active {
+	   #changeAllSettingsButton:active {
 	      background: #ccc;  
 	   }
 	   
@@ -429,8 +496,28 @@
 		   </div>
 		   <div id="nameChangeContainer">
 		     <span id="displayNameSpan" class="noSelect">Display Name</span>
-		     <input id="changeNameInput" autofocus autocomplete="off" /><button id="changeNameButton" class="regularButton">Ok</button>
+		     <input id="changeNameInput" autofocus autocomplete="off" />
 		   </div>
+		   <div id="colorContainer">
+		   
+		     <div id="colorNameChangeContainer" class="colorChangeContainer">
+		       <div id="colorNameSpanInput" class="colorSpanInput">
+			     <span id="colorChangeNameSpan" class="noSelect">Name Color</span>
+			     <span class="hex">#</span><input id="colorChangeNameInput" class="colorChangeInput" maxlength="6" autocomplete="off" />
+			   </div>
+			   <div id="colorNamePreview" class="colorPreview"></div>
+			 </div>  
+			 
+		     <div id="colorTextChangeContainer" class="colorChangeContainer">
+		       <div id="colorTextSpanInput" class="colorSpanInput">
+			     <span id="colorChangeTextSpan" class="noSelect">Text Color</span>
+			     <span class="hex">#</span><input id="colorChangeTextInput" class="colorChangeInput" maxlength="6" autocomplete="off" />
+			   </div>
+			   <div id="colorTextPreview" class="colorPreview"></div>
+			 </div>  
+			 
+		   </div>		  
+           <button id="changeAllSettingsButton" class="regularButton">Apply</button>
 		</div>
 	  </div>	  
 	  
@@ -456,15 +543,17 @@
 		var socket = io();
 		var clicks = 0;
 		var darken = false;
-	    var name = "____";
+	    var name = "";
 		var messagesContainer = document.getElementById('messagesContainer');
 		var connected = false;
+		var nameColor = "414163";
+		var textColor = "000000";
 	
 		//When you submit a message
 		$('#messageForm').submit(function() {
-			if($('#messageInput').val() != '') {
-				socket.emit('chat message', '<li class="msg"><label>' + name + ':</label><span>' + $('#messageInput').val() + '</span></li>');		
-				$('#messages').append($('<li class="msg">').append('<label>' + name + ':</label><span>' + $('#messageInput').val() + '</span>'));
+			if(($('#messageInput').val() != '') && (connected)) {
+				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span></li>');		
+				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span>'));
 				$('#messageInput').val('');
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
 			}
@@ -482,29 +571,90 @@
             $('#settingsBox').toggle();	
 			$('#changeNameInput').focus();	 
 			$('#changeNameInput').val(name);
+			$('#colorChangeNameInput').val(nameColor);
+			$('#colorNamePreview').css('background', '#' + nameColor);
+			$('#colorChangeTextInput').val(textColor);
+			$('#colorTextPreview').css('background', '#' + textColor);			
 			clicks = 0;
 			darken = true;
 		});
 	  
-	    //When you change your name and click Ok
-		$('#changeNameButton').click(function() {
-			name = $('#changeNameInput').val();
-			$('#connectName').text(name);
-			setCookie("name", name, 1);
-		  
-			socket.emit('new display name', name);
-		  
+	    //Perform the steps to fully change your name if you changed it
+	    function changeName() {
+			var tempName = $('#changeNameInput').val();
+			if(tempName != "") {
+			    name = tempName;
+				setCookie("name", name, 1);				
+				if(connected) {
+				    $('#connectName').text(name);								  
+				    socket.emit('new display name', name);
+				}
+			}
+		}
+		
+		//Check to see if it's a hex color
+		function isHexColor(color) {
+		   return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+		}
+		
+		//Perform the steps to fully change a color if you changed it
+		function changeColor(choice){
+			var tempColor;
+			if(choice == "Name")
+		        tempColor = $('#colorChangeNameInput').val();
+		    else
+			    tempColor = $('#colorChangeTextInput').val();
+				
+			if(isHexColor("#" + tempColor)) {
+			    if(choice == "Name") {
+				    nameColor = tempColor;
+					setCookie("nameColor", nameColor, 1);
+				}
+				else {
+				    textColor = tempColor;
+					setCookie("textColor", textColor, 1);
+				}
+			}
+		}
+	 
+	    //Dynamically change the preview for the name color as you type valid hex colors
+		$('#colorChangeNameInput').on('input', function() {
+		    if(isHexColor("#" + $(this).val()))
+			    $('#colorNamePreview').css('background', '#' + $(this).val());
+		});
+		//Dynamically change the preview for the text color as you type valid hex colors
+		$('#colorChangeTextInput').on('input', function() {
+		    if(isHexColor("#" + $(this).val()))
+			    $('#colorTextPreview').css('background', '#' + $(this).val());
+		});		
+	  
+	    //When you change some settings and click Apply
+		$('#changeAllSettingsButton').click(function() {
+			changeName();
+			changeColor("Name");
+			changeColor("Text");
 			$('#shadow').toggle();  
 			$('#settingsBox').toggle();
 			$('#messageInput').focus();	 
 			darken = false;		  
+			
 		});
 		
-		//Allows you to press enter on the change name box and it will click ok
+		//Allows you to press enter on the change name box and it will click Apply
 		$('#changeNameInput').keypress(function(e) {
 			if(e.which == 13)
-				$('#changeNameButton').click();
+				$('#changeAllSettingsButton').click();
 		});
+		//Allows you to press enter on the change name color box and it will click Apply
+		$('#colorChangeNameInput').keypress(function(e) {
+			if(e.which == 13)
+				$('#changeAllSettingsButton').click();
+		});
+		//Allows you to press enter on the change text color box and it will click Apply
+		$('#colorChangeTextInput').keypress(function(e) {
+			if(e.which == 13)
+				$('#changeAllSettingsButton').click();
+		});		
 	  
 	    //Remove the shadow when you click anywhere besides the settingsBox
 	    $(document).on('click', function(event) {
@@ -518,11 +668,23 @@
 				}
 			}
 		});
+		
+		//Get the values for the name and text colors from cookies
+		function getColors() {
+		    var tempNameCol = getCookie("nameColor");
+			var tempTextCol = getCookie("textColor");
+			
+			if(tempNameCol != "")
+			    nameColor = tempNameCol;
+			else if(tempTextCol != "")
+			    textColor = tempTextCol;
+		}
 				
 		//On page ready, set up name variable and connected users
 		$( document ).ready(function() {
 		    $('#connectText').text('Not connected');
-			$('#connectName').text('____');
+			$('#connectName').text('______');
+			getColors();
 		});
 	  
 	  	//Handle the events needed for when you make connection with the server
@@ -546,7 +708,7 @@
 		    $('#circle').css('background', '#E60000');
 			$('#circle').css('border', '2px solid #B20000');
 		    $('#connectText').text('Not connected');
-			$('#connectName').text('____');		    
+			$('#connectName').text('____');		
 		}
 		  
 		//------------Handle all socket identifiers ---------------------------------------------------
@@ -558,7 +720,7 @@
 		
 		//For handling the server disconnecting
 		socket.on('disconnect', function() {
-		    connected = false;
+			connected = false;		
 			serverDisconnect();
 		});
 		
