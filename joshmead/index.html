@@ -1,243 +1,601 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Socket.IO Chat</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font: 13px Helvetica, Arial; }
+	   body {
+	       margin: 0;
+		   padding: 0;
+		   font: 13px Helvetica; 
+	   }
+	
+	   #container { 
+		  min-width: 1200px;
+		  height: 100%;
+		  z-index: 10;
+	   }
+	   #header { 
+	       position: relative;
+	       height: 60px; 
+		   width: 100%;
+	       text-align: center;
+		   background: #3B5694; 
+		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);	
+	   }
+	   #circle { 
+	       left: 60px; 
+		   top: 16px; 
+	       width: 20px; 
+		   height: 20px; 
+	       position: absolute;
+		   text-align: left; 
+		   background: #E60000;
+		   -webkit-border-radius: 10px; 
+		   -moz-border-radius: 10px; 
+		   border-radius: 10px; 
+		   border: 2px solid #B20000;		   
+	   }
+	   #nameBox { 
+	       position: relative;
+		   vertical-align: top;
+	   }
+	   #connectText { 
+	       padding-bottom: 5px;
+		   display: block;
+	       color: #FFF;
+		   font-size: 95%;
+	   }
+	   #connectName { 
+	        color: #FFF; 
+			font-size: 155%;
+	   }
+
+	   .noSelect {
+		   -webkit-touch-callout: none;
+		   -webkit-user-select: none;
+		   -khtml-user-select: none;
+		   -moz-user-select: none;
+		   -ms-user-select: none;
+		   user-select: none;
+	   }
 	   
-	    #header { background: #3B5694; height: 50px; position: relative; top: 0; width: 100%; border-bottom: 1px solid #444; z-index: 8; text-align: center; }
-	  
-	    #circle { position: absolute; background: #E60000; width: 22px; height: 22px; -webkit-border-radius: 11px; -moz-border-radius: 11px; border-radius: 11px; z-index: 9; right: 97%; top: 15px; border: 2px solid #B20000; }
-	  
-	    .title { position: relative; vertical-align: top; display: inline-block; }
-	    #connectNameTop { color: #FFF; font-size: 95%; }
-	    #connectName { color: #FFF; display: block; font-size: 155%; }
-	  
-	    #onlineButton { height: 31px; width: 5%; padding: 5px; position: absolute; margin-top: -31px; margin-left: 92%; border-bottom: 1px solid #444; z-index: 9; border-radius: 5px 5px 0px 0px; -moz-border-radius: 5px 5px 0px 
-		                0px; -webkit-border-radius: 5px 5px 0px 0px; cursor: pointer; border: none; border-bottom: 1px solid #444; }
-	    .online-div { width: 17%; height: 55%; background: #8196C8; position: absolute; right: 3%; top: 50px; display: none; border-bottom: 1px solid #444; border-left: 1px solid #444; border-right: 1px solid #444; z-index: 9}
-	    .combinedOnline { vertical-align: top; display: inline-box; text-align: center; margin-top: 8%; }
-	    #onlineText { color: #FFF; font-size: 125%; font-weight: bold; }
-	    #online-users { position: absolute; width: 75%; height: 78%; background: #FFF; list-style-type: none; display: block; margin-left: 12.5%; border: 1px solid #444; }
-        #online-users li { padding: 5px 10px; text-align: left; }
-        #online-users li:nth-child(odd) { background: #eee; }	  
-	  
-	    .regularButton:hover { background: #ddd; }
-		.regularButton:active { background: #ccc; }
-	  
-	    .specialButton:hover { background: #a0e1ed; }
-		.specialButton:active { background: #8ddbea; }
-	  
-	    #settingsButton { width: 27%; position: absolute; margin-left: 62.5%; bottom: 2%; padding: 5px; z-index: 9; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; cursor: pointer; border: 1px solid #444; }
-	  
-        #shadow { background: #000; position: fixed; left: 0; right: 0; width: 100%; height: 100%; z-index: 10; display: none; opacity: 0.7; filter:progid:DXImageTransform.Microsoft.BasicImage(opacity=.7); }
-	  
-	    #settingsBox { background: #ccc; position: absolute; left: 50%; top: 50%; height: 200px; width: 400px; margin-top: -100px; margin-left: -200px; display: none; z-index: 12; border: 1px solid #444; }
-	    #settingsContainer { vertical-align: top; display: inline-box; text-align: center; margin-top: 12%; }
-	    #displayName { font-size: 125%; }
-	    #changeName { border: 1px solid #444; padding: 5px; width: 70%; margin-right: 1%; margin-left: 3%; }
-	    #changeNameButton { padding: 5px; width: 12%; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; cursor: pointer; border: 1px solid #444; }
-	  
-	    #messageForm { background: #233F7E; padding: 3px; position: fixed; bottom: 0; width: 100%; border-top: 1px solid #444; }
-	    #messageInput { border: 0; padding: 10px; width: 89%; margin-right: .5%; margin-left: 0.5%; }
-	    #sendButton { width: 9%; background-color: #b3e7f1; border: none; padding: 8px; font-size: 16px; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; cursor: pointer; }
-		
-		#messages-container { position: fixed; width: 100%; height: 90%; overflow-y: scroll; overflow-x: auto; }
-		
-		.userLabel { padding-left: 80%; font-size: 10x; font-style: italic; }
-		
-	    #messages { list-style-type: none; margin: 0; padding: 0; display: block; }
-	    .msg { padding: 5px 10px; }
-        .msg:nth-of-type(even) { background: #eee; }
-		.msg label {color: #414163; font-weight: bold; padding-right: 25px; }
-		.msg span { color: #000; }
-    </style>
+	   #moreUL {
+		  position: relative;
+		  top: -25px;
+	      left: 40%;
+	      text-align: left;
+		  display: inline;
+		  margin: 0;
+		  padding: 10px 4px 12px 0;
+		  list-style: none;
+		  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);		  
+	   }
+	   
+	   #moreLI {
+	       font: bold 12px/18px sans-serif;
+		   display: inline-block;
+		   margin-right: -4px;
+		   position: relative;
+		   padding: 10px 40px;
+		   background: #fff;
+		   cursor: pointer;
+		   -webkit-transition: all 0.2s;
+		   -moz-transition: all 0.2s;
+		   -ms-transition: all 0.2s;
+		   -o-transition: all 0.2s;
+		   transition: all 0.2s;
+		   
+		   border-radius: 5px 5px 0px 0px;
+		   -moz-border-radius: 5px 5px 0px 0px;
+		   -webkit-border-radius: 5px 5px 0px 0px;
+	   }
+	   
+	   #moreLI:hover {
+		   background: #eee;      
+	   }	   
+	   #moreLI:active {
+	       background: #ccc;
+	   }
+       
+	   
+	   #dropDown {
+	      text-align: left;
+		  display: inline;
+		  margin: 0;
+		  padding: 10px 4px 12px 0;
+		  list-style: none;
+		  
+		  position: absolute;
+		  top: 29px;
+		  left: -151px;
+		  width: 150px;
+		  -webkit-box-shadow: none;
+		  -moz-box-shadow: none;
+		  box-shadow: none;
+		  display: none;	
+		  
+		  -webkit-transiton: opacity 0.5s;
+		  -moz-transition: opacity 0.5s;
+		  -ms-transition: opacity 0.5s;
+		  -o-transition: opacity 0.5s;
+		  -transition: opacity 0.5s;
+		  z-index: 40;
+	   }
+	   
+	   #moreDropDown {
+	      cursor: default;
+	      width: 260px;
+		  height: 380px;
+	      background: #8196C8;
+		  display: block;
+		  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+	   }
+	   
+	   #onlineContainer { 
+	      vertical-align: top; 
+		  display: inline-box;
+	      padding-top: 15px;
+	      text-align: center;
+	   }
+	   
+	   #onlineUsersSpan {
+	       color: #fff;
+		   font-size: 125%; 
+		   font-weight: bold;
+	   }
+	   
+	   #onlineUsersScrollable {
+	       position: relative;
+	       height: 260px;
+		   width: 190px;		   
+	       overflow-y: auto;
+		   overflow-x: hidden;
+	       margin-top: 3px; 		
+		   left: 12.5%;
+		   background: #fff;
+		   -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+		   -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+		   box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);		   
+	   }
+	   
+	   #onlineUsers {
+	       height: 100%;
+	       background: #fff;
+		   list-style-type: none; 
+		   display: block;
+	   }
+	   
+	   #onlineUsers li {
+	      position: relative;
+		  width: 178px;
+	      padding: 3px 6px;
+		  left: -40px;
+		  text-align: left;
+		  font-size: 95%;
+		  font-style: default;
+	   }
+	   #onlineUsers li:nth-child(odd) { 
+	      background: #eee; 
+	   }
+	   
+	   #settingsButton {
+	       font: bold 12px/18px sans-serif;
+		   display: inline-block;
+		   margin-right: -4px;
+		   position: relative;
+		   padding: 10px 20px;
+		   background: #fff;
+		   cursor: pointer;	    
+		   border: 0;
+		   border-radius: 5px; 
+		   -moz-border-radius: 5px; 
+		   -webkit-border-radius: 5px;
+		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	
+		   
+		   position:relative;
+		   left: 130px;
+		   top: 20px;
+	   }
+	   
+	   #settingsButton:hover {
+		   background: #eee;      
+	   }	   
+	   #settingsButton:active {
+	       background: #ccc;
+	   }
+	   
+	   #shadow {
+	       background: #000; 
+		   position: fixed; 
+		   left: 0; 
+		   right: 0; 
+		   width: 100%; 
+		   height: 100%; 
+		   z-index: 42; 
+		   display: none; 
+		   opacity: 0.7; 
+		   filter:progid:DXImageTransform.Microsoft.BasicImage(opacity=.7);
+	   }
+	   
+	   #settingsBox {
+	      position: absolute;
+	      background: #fff; 
+		  left: 50%; 
+		  top: 50%; 
+		  height: 300px; 
+		  width: 400px; 
+		  margin-top: -150px; 
+		  margin-left: -200px; 
+		  display: none; 
+		  z-index: 44; 	
+
+		 -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		 -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);			  
+	   }
+	   
+	   #settingsContainer {
+	      vertical-align: top; 
+		  text-align: center; 
+		  z-index: 45;
+		  display: block;
+	   }
+	   
+	   #settingsHeader {
+	      position: relative;
+		  width: 100%;
+		  background: #3B5694;
+		  padding-top: 10px; 
+		  padding-bottom: 10px;
+	   }
+	   
+	   #settingsLabel {
+	       color: #fff;
+	       font-size: 150%;
+	   }
+	   
+	   #nameChangeContainer {
+	      padding-top: 50px; 
+	      vertical-align: top; 
+	      display: inline-block;
+	   }
+	   
+	   #displayNameSpan {
+	       font-size: 125%;
+	   }
+	   
+	   #changeNameInput {
+	      padding: 5px; 
+		  width: 70%; 
+		  margin-right: 2%; 
+		  margin-left: 3%;
+		  -webkit-border-radius: 5px;
+		  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+		  -moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
+		  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);			  
+	   }
+	   
+	   #changeNameButton {
+	       font: bold 12px/18px sans-serif;
+		   display: inline-block;
+		   margin-right: -4px;
+		   position: relative;
+		   padding: 5px 10px;
+		   background: #fff;
+		   cursor: pointer;	    
+		   border: 0;
+		   border-radius: 5px; 
+		   -moz-border-radius: 5px; 
+		   -webkit-border-radius: 5px;
+		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	   
+	   }
+	   
+	   #changeNameButton:hover {
+	      background: #eee;  
+	   }
+	   
+	   #changeNameButton:active {
+	      background: #ccc;  
+	   }
+	   
+	   #messagesContainer {
+	       position: absolute;
+		   width: 100%;
+		   overflow-y: auto;	
+		   bottom: 45px;
+		   top: 60px;
+		   z-index: 5;
+	   }
+	   
+	   #messages {	   
+   
+	       list-style-type: none; 
+		   margin: 0; 
+		   padding: 0; 
+		   display: block;
+		   z-index: 5;
+	   }
+	   
+	   .msg { 
+	       padding: 5px 10px; 
+	   }
+       .msg:nth-of-type(even) { 
+	       background: #eee; 
+		   z-index: 5;
+	   }
+	   .msg label {
+	       color: #414163; 
+		   font-weight: bold; 
+		   padding-right: 25px; 
+	   }
+	   .msg span { 
+	       color: #000; 
+	   }
+	   
+	   .userLabel { 
+	      padding-left: 80%; 
+		  font-size: 10x; 
+		  font-style: italic; 
+	   }
+	   
+	   #messageFormContainer {
+	       position: absolute;
+		   bottom: 0;
+	       width: 100%;
+		   min-width: 1200px;
+		   border-top: 1px solid #444;		   
+	   }
+	   
+	   #messageForm {
+	       position: relative;
+	       background: #233F7E;  
+		   padding: 3px;
+	   }
+	   
+	   #messageInput {
+	       width: 89%;
+		   padding: 10px;
+           margin-right: .5%; 
+		   margin-left: 0.5%;		   
+	   }
+	   
+	   #sendButton {
+	       width: 8%;	   
+	   	   font: bold 12px/18px sans-serif;
+		   display: inline-block;
+		   margin-right: -4px;
+		   position: relative;
+		   padding: 8px 10px;
+		   background: #b3e7f1;
+		   cursor: pointer;	    
+		   border: 0;
+		   border-radius: 5px; 
+		   -moz-border-radius: 5px; 
+		   -webkit-border-radius: 5px;
+		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	 
+	   }
+	   
+	   #sendButton:hover {
+	      background: #a0e1ed;
+	   }
+	   #sendButton:active {
+	      background: #8ddbea;
+	   }	   
+	</style>
   </head>
   <body>
-	<div id="settingsBox">
-	  <div id="settingsContainer">
-	    <span id="displayName">Display Name</span>
-		<input id="changeName" autofocus autocomplete="off" /><button id="changeNameButton" class="regularButton">Ok</button>
+    <div id="container">
+	  <div id="shadow"></div> 	
+      <div id="header">
+	    <div id="circle"></div>
+		<div id="nameBox">
+		  <label id="connectText" class="noSelect">Connected as</label>
+		  <label id="connectName" class="noSelect"></label>
+		</div>	
+		<ul id="moreUL">
+		  <li id="moreLI" class="noSelect">
+		    More
+			<ul id="dropDown">
+			  <div id="moreDropDown">
+				 <div id="onlineContainer">
+				   <span id="onlineUsersSpan" class="noSelect">Online Users</span>
+				   <div id="onlineUsersScrollable">
+				     <ul id="onlineUsers"></ul>
+				   </div>
+				 </div>
+				<button id="settingsButton">Settings</button>
+			  </div>
+			</ul>
+		  </li>
+		</ul>
 	  </div>
-	</div>    
-	
- 	<div id="shadow"></div> 
-	
-	
-    <div id="circle"></div>	
-    <div id="header">
-	   <div class="title"><label id="connectNameTop">Connected as</label><span id="connectName"></span></div>	  
-	</div>
-	
-	  <button id="onlineButton" class="regularButton">More</button> 	
-	<div class="online-div">
-	  <div class="combinedOnline">
-	    <span id="onlineText">Users Online</span>
-	    <ul id="online-users"></ul>	
-	  </div>
-	  <button id="settingsButton" class="regularButton">Settings</button>
-	</div>	  
+	  
+	  <div id="settingsBox">
+	    <div id="settingsContainer">
+		   <div id="settingsHeader">
+		     <label id="settingsLabel" class="noSelect">Settings</label>
+		   </div>
+		   <div id="nameChangeContainer">
+		     <span id="displayNameSpan" class="noSelect">Display Name</span>
+		     <input id="changeNameInput" autofocus autocomplete="off" /><button id="changeNameButton" class="regularButton">Ok</button>
+		   </div>
+		</div>
+	  </div>	  
+	  
 
-	<div id="messages-container">
-       <ul id="messages"></ul>	
+   
+      <div id="messageFormContainer">
+      <form id="messageForm" action="">
+        <input id="messageInput" autofocus autocomplete="off" /><button id="sendButton">Send</button>
+      </form>	 
+	  </div>
 	</div>
-    <form id="messageForm" action="">
-      <input id="messageInput" autofocus autocomplete="off" /><button id="sendButton" class="specialButton">Send</button>
-    </form>
-	
+	<div id="messagesContainer">
+      <ul id="messages"></ul>
+	</div>
 
 	
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script type="text/javascript" src="/jquery/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="/jquery/jquery-ui-1.7.2.custom.min.js"></script>
+	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script type="text/javascript" language="javascript">
-	  var socket = io();
+	    
+		var socket = io();
+		var clicks = 0;
+		var darken = false;
+	    var name = "Guest";
+		var messagesContainer = document.getElementById('messagesContainer');
+	    var iter = 0;
+	
+		//When you submit a message
+		$('#messageForm').submit(function() {
+			//if($('#messageInput').val() != '') {
+			    $('#onlineUsers').append($('<li>').text('test' + iter++));
+				socket.emit('chat message', '<li class="msg"><label>' + name + ':</label><span>' + $('#messageInput').val() + '</span></li>');		
+				$('#messages').append($('<li class="msg">').append('<label>' + name + ':</label><span>' + $('#messageInput').val() + '</span>'));
+				$('#messageInput').val('');
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
+			//}
+			return false;
+		}); 
+	
+	    //Toggle the dropdown menu to display the online users/settings button
+	    $('#moreLI').click(function() {
+	        $('#dropDown').toggle();
+	    });
 	  
-	  var clicks = 0;  //Used for closing the settings box when you click anywhere else
-	  var darken = false;  //Darken the screen
-	  var name = "Guest";  //Name you are connected as
-	  var messagesContainer = document.getElementById('messages-container');
-	  var currentFormButton;
+	    //Open the settings box
+	    $('#settingsButton').click(function() {    
+   	        $('#shadow').toggle();  
+            $('#settingsBox').toggle();	
+			$('#changeNameInput').focus();	 
+			$('#changeNameInput').val(name);
+			clicks = 0;
+			darken = true;
+		});
 	  
-	  //When you submit a message
-	  $('#messageForm').submit(function(){
-	    if($('#messageInput').val() != '') {
-		    console.log('what');
-		    socket.emit('chat message', '<li class="msg"><label>' + name + ':</label><span>' + $('#messageInput').val() + '</span></li>');		
-		    $('#messages').append($('<li class="msg">').append('<label>' + name + ':</label><span>' + $('#messageInput').val() + '</span>'));
-		    $('#messageInput').val('');
-		    messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
-		}
-		return false;
-	  });  
-	  
-	  //When you click the settings button to open the settings box
-	  $('#settingsButton').click(function() {    
-   	     $('#shadow').toggle();  
-         $('#settingsBox').toggle();	
-         $('#changeName').focus();	 
-		 $('#changeName').val(name);
-		 clicks = 0;
-		 darken = true;
-	  });
-	  
-	  //When you change your name and click Ok
-	  $('#changeNameButton').click(function() {
-	      name = $('#changeName').val();
-		  $('#connectName').text(name);
-		  setCookie("name", name, 1);
+	    //When you change your name and click Ok
+		$('#changeNameButton').click(function() {
+			name = $('#changeNameInput').val();
+			$('#connectName').text(name);
+			setCookie("name", name, 1);
 		  
-		  socket.emit('new display name', name);
+			socket.emit('new display name', name);
 		  
-		  $('#shadow').toggle();  
-		  $('#settingsBox').toggle();
-		  $('#messageInput').focus();	 
-		  darken = false;		  
-	  });
+			$('#shadow').toggle();  
+			$('#settingsBox').toggle();
+			$('#messageInput').focus();	 
+			darken = false;		  
+		});
+		
+		//Allows you to press enter on the change name box and it will click ok
+		$('#changeNameInput').keypress(function(e) {
+			if(e.which == 13)
+				$('#changeNameButton').click();
+		});
 	  
-	  //When you click anywhere on the page when the settings box is open (to close it)
-      $(document).on('click', function(event) {
-	      if(!$(event.target).closest('#settingsBox').length) {
-		      clicks++;
-			  if((clicks > 1) && (darken == true)) {
-				 $('#shadow').toggle();  
-				 $('#settingsBox').toggle();
-				 $('#messageInput').focus();	 
-				 darken = false;	
-			  }
-		  }
-	  });
+	    //Remove the shadow when you click anywhere besides the settingsBox
+	    $(document).on('click', function(event) {
+			if(!$(event.target).closest('#settingsBox').length) {
+				clicks++;
+				if((clicks > 1) && (darken == true)) {
+					$('#shadow').toggle();  
+					$('#settingsBox').toggle();
+					$('#messageInput').focus();	 
+					darken = false;	
+				}
+			}
+		});
+				
+		//On page ready, set up name variable and connected users
+		$( document ).ready(function() {
+			$('#connectName').text(name);
+			socket.emit('is it on', "y");
+			var tempName = getCookie("name");		  
+			if(tempName != "") {
+				name = tempName;
+				socket.emit('have display name', name);
+				$('#connectName').text(name);		
+				socket.emit('need all connections', "pls");
+			}	 
+			else
+				socket.emit('need guest name', "");			 
+		});
 	  
-	  //When you click the More button to open the online users
-	  $('#onlineButton').click(function() {
-	     $('.online-div').slideToggle("fast", "swing");
-	  });	  
+	  	  
+		//------------Handle all socket identifiers ---------------------------------------------------
+		//For gathering chat messages and displayin them
+		socket.on('chat message', function(msg){
+			$('#messages').append(msg);
+			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+		});	
 	  
-	  //Allows you to press enter on the change name box and it will click ok
-	  $('#changeName').keypress(function(e) {
-	      if(e.which == 13)
-		      $('#changeNameButton').click();
-	  });
+		//For setting your name as a guest with a unique number (you haven't configured a name yet)
+		socket.on('guest name', function(gName) {
+			name = gName;
+			$('#connectName').text(name);
+			socket.emit('need all connections', "pls");
+		});
 	  
-	  //On page ready  ---------------------------------
-	  $( document ).ready(function() {
-	  	  $('#connectName').text(name);
-	  	  socket.emit('is it on', "y");
-		  var tempName = getCookie("name");		  
-		  if(tempName != "") {
-		     name = tempName;
-			 //$('#online-users').append($('<li>').text(name));
-		     socket.emit('have display name', name);
-	  	     $('#connectName').text(name);		
-			 socket.emit('need all connections', "pls");
-		  }	 
-		  else
-		     socket.emit('need guest name', "");			 
-	  });	  	  
-	  //---------------------------------------------	  
+		//For getting newly connected users and appending their name to the online users list
+		socket.on('connected user', function(name) {
+			$('#onlineUsers').append($('<li>').text(name));
+			$('#messages').append('<label class="userLabel">' + name + ' has connected<br></label>');
+		});
 	  
-	  //------------Handle all socket identifiers -------------------
-	  //For gathering chat messages and displayin them
-	  socket.on('chat message', function(msg){
-		$('#messages').append(msg);
-		messagesContainer.scrollTop = messagesContainer.scrollHeight;
-	  });	
+		//For getting all the connected users at once to append to the online users list
+		socket.on('all connections', function(names) {
+			$('#onlineUsers').empty();
+			for(var i=0; i<names.length; i++) {
+				$('#onlineUsers').append($('<li>').text(names[i].Name));
+			}
+		});
 	  
-	  //For setting your name as a guest with a unique number (you haven't configured a name yet)
-	  socket.on('guest name', function(gName) {
-	      name = gName;
-		  //$('#online-users').append($('<li>').text(name));
-		  $('#connectName').text(name);
-		  socket.emit('need all connections', "pls");
-	  });
+		//For seeing whether the server is running or not (if it is, turn the circle green)
+		socket.on('i am on', function(data) {
+			$('#circle').css('background', '#00e500');
+			$('#circle').css('border', '2px solid #00b200');
+		});
 	  
-	  //For getting newly connected users and appending their name to the online users list
-	  socket.on('connected user', function(name) {
-	     $('#online-users').append($('<li>').text(name));
-		 $('#messages').append('<label class="userLabel">' + name + ' has connected<br></label>');
-	  });
+		socket.on('disconnected user', function(name) {
+			$('#messages').append('<label class="userLabel">' + name + ' has disconnected<br></label>');
+		});
+		//---------------------------------------------------------------------------------------------
+		
+		//Functions for cookies for storing your name  ------------------------------------------------
+		function setCookie(cname, cvalue, exdays) {
+			var d = new Date();
+			d.setTime(d.getTime() + (exdays*24*60*60*1000));
+			var expires = "expires="+d.toUTCString();
+			document.cookie = cname + "=" + cvalue + "; " + expires;
+		} 
 	  
-	  //For getting all the connected users at once to append to the online users list
-	  socket.on('all connections', function(names) {
-	      $('#online-users').empty();
-	      for(var i=0; i<names.length; i++) {
-		      $('#online-users').append($('<li>').text(names[i].Name));
-		  }
-	  });
-	  
-	  //For seeing whether the server is running or not (if it is, turn the circle green)
-	  socket.on('i am on', function(data) {
-	     $('#circle').css('background', '#00e500');
-	     $('#circle').css('border', '2px solid #00b200');
-	  });
-	  
-	  socket.on('disconnected user', function(name) {
-	     $('#messages').append('<label class="userLabel">' + name + ' has disconnected<br></label>');
-	  });
-	  //------------------------------------------------------
-	  
-	  
-	//Cookies for storing your name  ---------------------------------
-	function setCookie(cname, cvalue, exdays) {
-		var d = new Date();
-		d.setTime(d.getTime() + (exdays*24*60*60*1000));
-		var expires = "expires="+d.toUTCString();
-		document.cookie = cname + "=" + cvalue + "; " + expires;
-	} 
-	  
-	function getCookie(cname) {
-		var tname = cname + "=";
-		var ca = document.cookie.split(';');
-		for(var i=0; i<ca.length; i++) {
-			var c = ca[i];
-			while (c.charAt(0)==' ') c = c.substring(1);
-			if (c.indexOf(tname) == 0) return c.substring(tname.length, c.length);
+		function getCookie(cname) {
+			var tname = cname + "=";
+			var ca = document.cookie.split(';');
+			for(var i=0; i<ca.length; i++) {
+				var c = ca[i];
+				while (c.charAt(0)==' ') c = c.substring(1);
+				if (c.indexOf(tname) == 0) return c.substring(tname.length, c.length);
+			}
+			return "";
 		}
-		return "";
-	}
-	//---------------------------------------------------------------------
+		//---------------------------------------------------------------------------------------------
+		
+	  
 	</script>
   </body>
 </html>
