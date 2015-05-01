@@ -456,19 +456,18 @@
 		var socket = io();
 		var clicks = 0;
 		var darken = false;
-	    var name = "Guest";
+	    var name = "____";
 		var messagesContainer = document.getElementById('messagesContainer');
-	    var iter = 0;
+		var connected = false;
 	
 		//When you submit a message
 		$('#messageForm').submit(function() {
-			//if($('#messageInput').val() != '') {
-			    $('#onlineUsers').append($('<li>').text('test' + iter++));
+			if($('#messageInput').val() != '') {
 				socket.emit('chat message', '<li class="msg"><label>' + name + ':</label><span>' + $('#messageInput').val() + '</span></li>');		
 				$('#messages').append($('<li class="msg">').append('<label>' + name + ':</label><span>' + $('#messageInput').val() + '</span>'));
 				$('#messageInput').val('');
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
-			//}
+			}
 			return false;
 		}); 
 	
@@ -522,8 +521,15 @@
 				
 		//On page ready, set up name variable and connected users
 		$( document ).ready(function() {
-			$('#connectName').text(name);
-			socket.emit('is it on', "y");
+		    $('#connectText').text('Not connected');
+			$('#connectName').text('____');
+		});
+	  
+	  	//Handle the events needed for when you make connection with the server
+		function connectionStart() {
+		    $('#circle').css('background', '#00e500');
+			$('#circle').css('border', '2px solid #00b200');
+		    $('#connectText').text('Connected as');
 			var tempName = getCookie("name");		  
 			if(tempName != "") {
 				name = tempName;
@@ -532,11 +538,30 @@
 				socket.emit('need all connections', "pls");
 			}	 
 			else
-				socket.emit('need guest name', "");			 
-		});
-	  
-	  	  
+				socket.emit('need guest name', "");		    
+		}
+		
+		//Handle the events for if the server goes down
+		function serverDisconnect() {
+		    $('#circle').css('background', '#E60000');
+			$('#circle').css('border', '2px solid #B20000');
+		    $('#connectText').text('Not connected');
+			$('#connectName').text('____');		    
+		}
+		  
 		//------------Handle all socket identifiers ---------------------------------------------------
+		//For handling the startup of a connection to the server
+		socket.on('connect', function() {
+		   connected = true;
+		   connectionStart();
+		});
+		
+		//For handling the server disconnecting
+		socket.on('disconnect', function() {
+		    connected = false;
+			serverDisconnect();
+		});
+		
 		//For gathering chat messages and displayin them
 		socket.on('chat message', function(msg){
 			$('#messages').append(msg);
@@ -564,12 +589,7 @@
 			}
 		});
 	  
-		//For seeing whether the server is running or not (if it is, turn the circle green)
-		socket.on('i am on', function(data) {
-			$('#circle').css('background', '#00e500');
-			$('#circle').css('border', '2px solid #00b200');
-		});
-	  
+	    //For displaying to the chat when a user disconnects
 		socket.on('disconnected user', function(name) {
 			$('#messages').append('<label class="userLabel">' + name + ' has disconnected<br></label>');
 		});
@@ -593,9 +613,7 @@
 			}
 			return "";
 		}
-		//---------------------------------------------------------------------------------------------
-		
-	  
+		//---------------------------------------------------------------------------------------------	  
 	</script>
   </body>
 </html>
