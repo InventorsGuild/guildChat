@@ -3,6 +3,9 @@
   <head>
     <title>Socket.IO Chat</title>
     <style>
+	   * {
+	      -webkit-padding-start: 0px;
+	   }
 	   body {
 	       margin: 0;
 		   padding: 0;
@@ -39,10 +42,10 @@
 	   }
 	   #nameBox { 
 	       position: relative;
-		   vertical-align: top;
+		   -webkit-padding-before: 4px;
 	   }
 	   #connectText { 
-	       padding-bottom: 5px;
+	       margin-bottom: 5px;
 		   display: block;
 	       color: #FFF;
 		   font-size: 95%;
@@ -176,6 +179,7 @@
 		  width: 178px;
 	      padding: 3px 6px;
 		  left: -40px;
+		  -webkit-margin-start: 40px;
 		  text-align: left;
 		  font-size: 95%;
 		  font-style: default;
@@ -187,7 +191,8 @@
 	   #settingsButton {
 	       font: bold 12px/18px sans-serif;
 		   display: inline-block;
-		   margin-right: -4px;
+		   margin-right: -5px;
+		   -webkit-margin-start: 5px;
 		   position: relative;
 		   padding: 10px 20px;
 		   background: #fff;
@@ -294,6 +299,7 @@
 	      vertical-align: bottom;     
 		  margin-left: -83px;
 		  margin-bottom: -10px;
+		  -webkit-margin-start: -103px;
 	   }
 	   
 	   .colorSpanInput {
@@ -306,14 +312,18 @@
 	   #colorChangeNameSpan {
 	      font-size: 110%;
 		  margin-left: -32px;
+		  -webkit-margin-start: -32px;
 	      padding-top: 20px;
+		  -webkit-padding-before: 10px;
 		  display: block;
 	   }
 	   
 	   #colorChangeTextSpan {
 	      font-size: 110%;
 		  margin-left: -37px;
+		  -webkit-margin-start: -37px;
 	      padding-top: 20px;
+		  -webkit-padding-before: 19px;
 		  display: block;	       
 	   }
 	   
@@ -328,6 +338,7 @@
 		  width: 70px; 
 		  margin-right: 2%; 
 		  margin-left: 3%;
+		  -webkit-margin-after: -20px;
 		  -webkit-border-radius: 5px;
 		  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
 		  -moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
@@ -335,6 +346,7 @@
 	   }
 	   
 	   .colorPreview {
+	       -webkit-margin-after: -9px;
 	       padding-left: 5px; 
 	       display: inline-block;
 		   position: relative;
@@ -384,8 +396,7 @@
 		   z-index: 5;
 	   }
 	   
-	   #messages {	   
-   
+	   #messages {	    
 	       list-style-type: none; 
 		   margin: 0; 
 		   padding: 0; 
@@ -460,9 +471,42 @@
 	   #sendButton:active {
 	      background: #8ddbea;
 	   }	   
+	   
+	   #typingIndicatorContainer {
+	       position: absolute;
+		   width: 280px;
+		   z-index: 40;
+		   right: 20px;
+		   bottom: 45px;
+		   margin-bottom: 0px;
+		   -webkit-margin-after: 1px;
+	   }
+	   
+	   #typingIndicator {
+	       list-style-type: none; 
+		   margin: 0; 
+		   padding: 0; 
+		   display: block;	  
+	   }
+	   
+	   [data-typing]:nth-child(1) {
+	       border-top: 1px solid rgba(59, 86, 148, 0.3);
+	   }
+	   [data-typing] {
+	       border-bottom: 1px solid rgba(59, 86, 148, 0.3);
+		   border-left: 1px solid rgba(59, 86, 148, 0.3);
+		   border-right: 1px solid rgba(59, 86, 148, 0.3);
+	       padding: 1px 1px 1px 10px;
+	       background: #c4ccde;
+		   color: #FFF;
+	   }
+	   
 	</style>
   </head>
   <body>
+    <div id="typingIndicatorContainer">
+	  <ul id="typingIndicator"></ul>
+	</div>
     <div id="container">
 	  <div id="shadow"></div> 	
       <div id="header">
@@ -548,9 +592,11 @@
 		var connected = false;
 		var nameColor = "414163";
 		var textColor = "000000";
+		var isTyping = false;
 	
 		//When you submit a message
 		$('#messageForm').submit(function() {
+		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
 			if(($('#messageInput').val() != '') && (connected)) {
 				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span></li>');		
 				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span>'));
@@ -669,6 +715,21 @@
 			}
 		});
 		
+		//For when a user is typing text/deleted all text (fire off typing identifier)
+		$('#messageInput').on('input', function() {
+		    if($(this).val().length > 0) {
+			    if(!isTyping) {
+			        isTyping = true;
+					socket.emit('is typing', "yes");
+				}
+			}   
+			else {
+			    isTyping = false;
+			    socket.emit('is typing', "no");
+			}
+		});
+		
+		
 		//Get the values for the name and text colors from cookies
 		function getColors() {
 		    var tempNameCol = getCookie("nameColor");
@@ -709,6 +770,15 @@
 			$('#circle').css('border', '2px solid #B20000');
 		    $('#connectText').text('Not connected');
 			$('#connectName').text('____');		
+			$('#typingIndicator').empty();
+		}
+		
+		function removeIndividualTypingIndicator(user) {
+		   	$('#typingIndicator li').each(function(index) {
+			    if($(this).attr("data-id") == user.ID) {
+				    $(this).remove();
+				}
+			});
 		}
 		  
 		//------------Handle all socket identifiers ---------------------------------------------------
@@ -752,8 +822,19 @@
 		});
 	  
 	    //For displaying to the chat when a user disconnects
-		socket.on('disconnected user', function(name) {
-			$('#messages').append('<label class="userLabel">' + name + ' has disconnected<br></label>');
+		socket.on('disconnected user', function(user) {
+			removeIndividualTypingIndicator(user);
+			$('#messages').append('<label class="userLabel">' + user.Name + ' has disconnected<br></label>');
+		});
+		
+		//For displaying to the chat when a user is typing
+		socket.on('typing', function(user) {
+		    $('#typingIndicator').append('<li data-typing="yes" data-name="'+user.Name+'" data-id="'+user.ID+'">' + user.Name + ' is typing</li>');
+		});
+		
+		//For removing '[user] is typing' li 
+		socket.on('not typing', function(user) {
+		    removeIndividualTypingIndicator(user);
 		});
 		//---------------------------------------------------------------------------------------------
 		
