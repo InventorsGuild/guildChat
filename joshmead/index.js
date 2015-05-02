@@ -13,7 +13,7 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(data) {
 	    for(var i=0; i<connectedUsers.length; i++) {
 		    if(socket.id == connectedUsers[i].ID) {
-				socket.broadcast.emit('disconnected user', connectedUsers[i].Name);			
+				socket.broadcast.emit('disconnected user', connectedUsers[i]);			
 			    connectedUsers.splice(i, 1);
 				socket.broadcast.emit('all connections', connectedUsers);
 			}
@@ -47,6 +47,19 @@ io.on('connection', function(socket){
 				io.emit('all connections', connectedUsers);
 			}
 		}	    
+	});
+	
+	socket.on('is typing', function(choice) {
+	    var user;
+	    for(var i=0; i<connectedUsers.length; i++) {
+		    if(socket.id == connectedUsers[i].ID)
+			    user = connectedUsers[i];
+		}
+		
+	    if(choice == "yes") 
+		    socket.broadcast.emit('typing', user);
+		else
+		    socket.broadcast.emit('not typing', user);
 	});
 });
 
