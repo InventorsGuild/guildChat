@@ -38,7 +38,10 @@
 		   -webkit-border-radius: 10px; 
 		   -moz-border-radius: 10px; 
 		   border-radius: 10px; 
-		   border: 2px solid #B20000;		   
+		   border: 2px solid #B20000;		
+		   -webkit-box-shadow: 0 0 7px #F00;
+		  -moz-box-shadow: 0 0 7px #F00;
+		   box-shadow: 0 0 7px #F00;   
 	   }
 	   #nameBox { 
 	       position: relative;
@@ -751,7 +754,12 @@
 	  	//Handle the events needed for when you make connection with the server
 		function connectionStart() {
 		    $('#circle').css('background', '#00e500');
-			$('#circle').css('border', '2px solid #00b200');
+			$('#circle').css('border', '2px solid #00b200');			
+			//Glow
+			$('#circle').css('-webkit-box-shadow', '0 0 7px #0F0');
+			$('#circle').css('-moz-box-shadow', '0 0 7px #0F0');
+			$('#circle').css('box-shadow', '0 0 7px #0F0');
+			
 		    $('#connectText').text('Connected as');
 			var tempName = getCookie("name");		  
 			if(tempName != "") {
@@ -768,6 +776,11 @@
 		function serverDisconnect() {
 		    $('#circle').css('background', '#E60000');
 			$('#circle').css('border', '2px solid #B20000');
+			//Glow
+			$('#circle').css('-webkit-box-shadow', '0 0 7px #F00');
+			$('#circle').css('-moz-box-shadow', '0 0 7px #F00');
+			$('#circle').css('box-shadow', '0 0 7px #F00');
+			
 		    $('#connectText').text('Not connected');
 			$('#connectName').text('____');		
 			$('#typingIndicator').empty();
