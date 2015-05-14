@@ -516,7 +516,7 @@
 	    <div id="circle"></div>
 		<div id="nameBox">
 		  <label id="connectText" class="noSelect">Connected as</label>
-		  <label id="connectName" class="noSelect"></label>
+		  <label id="connectName" class="noSelect">&nbsp;</label>
 		</div>	
 		<ul id="moreUL">
 		  <li id="moreLI" class="noSelect">
@@ -747,7 +747,7 @@
 		//On page ready, set up name variable and connected users
 		$( document ).ready(function() {
 		    $('#connectText').text('Not connected');
-			$('#connectName').text('______');
+			$('#connectName').text('____');
 			getColors();
 		});
 	  
@@ -807,7 +807,7 @@
 			serverDisconnect();
 		});
 		
-		//For gathering chat messages and displayin them
+		//For gathering chat messages and displaying them
 		socket.on('chat message', function(msg){
 			$('#messages').append(msg);
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
