@@ -35,9 +35,9 @@
 	       position: absolute;
 		   text-align: left; 
 		   background: #E60000;
-		   -webkit-border-radius: 10px; 
-		   -moz-border-radius: 10px; 
-		   border-radius: 10px; 
+		   -webkit-border-radius: 50%; 
+		   -moz-border-radius: 50%; 
+		   border-radius: 50%; 
 		   border: 2px solid #B20000;		
 		   -webkit-box-shadow: 0 0 7px #F00;
 		  -moz-box-shadow: 0 0 7px #F00;
@@ -599,14 +599,27 @@
 		$('#messageForm').submit(function() {
 		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
 			if(($('#messageInput').val() != '') && (connected)) {
-				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span></li>');		
-				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span>'));
+				var messageStr = linkify($('#messageInput').val());
+				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>');		
+				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
 				socket.emit('is typing', "no");
 			}
 			return false;
 		}); 
+	
+		function linkify(str) {
+		    var reg = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi
+			
+			return str.replace(reg, function(url) {
+				if(url.substring(0,4) == 'http')
+			        return '<a href="' + url + '" target="_blank">' + url + '</a>';
+				else
+				    return '<a href="http://' + url + '" target="_blank">' + url + '</a>';
+			});
+		}
+	
 	
 	    //Toggle the dropdown menu to display the online users/settings button
 	    $('#moreLI').click(function() {
@@ -661,6 +674,7 @@
 				else {
 				    textColor = tempColor;
 					setCookie("textColor", textColor, 1);
+					$('#messageInput').css('color', textColor);
 				}
 			}
 		}
@@ -739,8 +753,10 @@
 			
 			if(tempNameCol != "")
 			    nameColor = tempNameCol;
-			if(tempTextCol != "")
+			if(tempTextCol != "") {
 			    textColor = tempTextCol;
+				$('#messageInput').css('color', textColor);
+			}
 		}
 				
 		//On page ready, set up name variable and connected users
