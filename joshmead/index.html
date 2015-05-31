@@ -1,6 +1,29 @@
 <!doctype html>
 <html>
   <head>
+   <link rel="icon" href="/favicon.ico?v2" />
+   <link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+   <link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+   <link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+   <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+   <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+   <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+   <link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+   <meta name="application-name" content="&nbsp;"/>
+   <meta name="msapplication-TileColor" content="#FFFFFF" />
+   <meta name="msapplication-TileImage" content="mstile-144x144.png" />
+   <meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+   <meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+   <meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+   <meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
+   
+   <link rel="stylesheet" type="text/css" href="xbbcode.css">
     <title>Socket.IO Chat</title>
     <style>
 	   * {
@@ -583,6 +606,7 @@
 	
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="xbbcode.js"></script>
 	<script type="text/javascript" language="javascript">
 	    
 		var socket = io();
@@ -599,7 +623,19 @@
 		$('#messageForm').submit(function() {
 		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
 			if(($('#messageInput').val() != '') && (connected)) {
-				var messageStr = linkify($('#messageInput').val());
+				var fixedStr = stopScriptInjecting($('#messageInput').val());							
+				
+				var bbStr = XBBCODE.process({
+					text: fixedStr,
+					removeMisalignedTags: false,
+					addInLineBreaks: false
+				});
+				
+				//var embedStr = autoEmbedYouTube(bbStr.html);				
+				//var messageStr = linkify(embedStr);
+				
+				var messageStr = linkify(bbStr.html);
+				
 				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>');		
 				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
@@ -619,6 +655,32 @@
 				    return '<a href="http://' + url + '" target="_blank">' + url + '</a>';
 			});
 		}
+	
+		function stopScriptInjecting(str) {
+			return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+		}
+	
+	
+	
+	
+	
+		//////FIX MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+		function autoEmbedYouTube(str) {
+		    console.log(str);
+		    var reg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+			var match = str.match(reg);
+
+			if(match && match[2].length == 11) {			
+				return str.replace(reg, function(url) {
+				    return '//www.youtube.com/embed/' + match[2];
+				});
+			}
+			else
+			    return str;
+		}
+	
+	
+	
 	
 	
 	    //Toggle the dropdown menu to display the online users/settings button

@@ -1,9 +1,15 @@
+var express = require('express');
 var app = require('express')();
+var favicon = require('serve-favicon');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var path = require('path');
 
 var connectedUsers = [];
 var guestIndex = 1;
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -52,8 +58,9 @@ io.on('connection', function(socket){
 	socket.on('is typing', function(choice) {
 	    var user;
 	    for(var i=0; i<connectedUsers.length; i++) {
-		    if(socket.id == connectedUsers[i].ID)
+		    if(socket.id == connectedUsers[i].ID) {
 			    user = connectedUsers[i];
+			}	
 		}
 		
 	    if(choice == "yes") 
