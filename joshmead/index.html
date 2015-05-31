@@ -25,7 +25,7 @@
    
    <link rel="stylesheet" type="text/css" href="xbbcode.css">
    <link rel="stylesheet" href="animate.min.css">
-    <title>Socket.IO Chat</title>
+    <title>Chat</title>
     <style>
 	   * {
 	      -webkit-padding-start: 0px;
@@ -652,6 +652,9 @@
 		var nameColor = "414163";
 		var textColor = "000000";
 		var isTyping = false;
+		
+		var unreadMessages = 0;
+		var activeWindow = true;
 	
 		//When you submit a message
 		$('#messageForm').submit(function() {
@@ -905,6 +908,7 @@
 			$('#onlineUsers').empty();
 		}
 		
+		//Remove a specific [user] is typing li
 		function removeIndividualTypingIndicator(user) {
 		   	$('#typingIndicator li').each(function(index) {
 			    if($(this).attr("data-id") == user.ID) {
@@ -912,7 +916,15 @@
 				}
 			});
 		}
-		  
+		
+		//Check if the window is active or not
+		window.onfocus = function() {
+			activeWindow = true;
+			unreadMessages = 0;
+			document.title = 'Chat';
+		}
+		window.onblur = function() { activeWindow = false; }
+		
 		//------------Handle all socket identifiers ---------------------------------------------------
 		//For handling the startup of a connection to the server
 		socket.on('connect', function() {
@@ -928,6 +940,10 @@
 		
 		//For gathering chat messages and displaying them
 		socket.on('chat message', function(msg) {
+			//Notifications in the title
+			if(!activeWindow)
+				document.title = '[' + ++unreadMessages + '] Chat';
+				
 			$('#messages').append(msg);
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});	
