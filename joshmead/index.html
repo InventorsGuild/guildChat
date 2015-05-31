@@ -24,6 +24,7 @@
    <meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
    
    <link rel="stylesheet" type="text/css" href="xbbcode.css">
+   <link rel="stylesheet" href="animate.min.css">
     <title>Socket.IO Chat</title>
     <style>
 	   * {
@@ -457,7 +458,8 @@
 		   bottom: 0;
 	       width: 100%;
 		   min-width: 1200px;
-		   border-top: 1px solid #444;		   
+		   border-top: 1px solid #444;	
+		   z-index: 41;
 	   }
 	   
 	   #messageForm {
@@ -527,11 +529,43 @@
 		   color: #FFF;
 	   }
 	   
+	   #floodControlContainer {
+	       position: absolute;
+		   width: 100%;
+		   z-index: 40;
+		   bottom: 60px;
+		   margin-bottom: 0px;
+		   -webkit-margin-after: 1px;
+		   visibility: hidden;
+	   }
+	   
+	   #floodControlBubble {
+		   margin: 0 auto;
+		   width: 500px;
+		   background: rgba(214,50,50, 0.7);
+		   padding: 15px;
+		   border-radius: 10px; 
+		   -moz-border-radius: 10px; 
+		   -webkit-border-radius: 10px;
+		   border: 1px solid rgba(214,50,50, 0.9);
+		   text-align: center;
+	   }
+	   #floodControlContainer span {
+	       font-size: 140%;
+		   color: #FFF;
+		   padding: 10px;
+	   }
+	   
 	</style>
   </head>
   <body>
     <div id="typingIndicatorContainer">
 	  <ul id="typingIndicator"></ul>
+	</div>
+	<div id="floodControlContainer">
+	  <div id="floodControlBubble">
+	    <span>You're sending messages too fast.  Check your privilege</span>
+	  </div>
 	</div>
     <div id="container">
 	  <div id="shadow"></div> 	
@@ -637,7 +671,7 @@
 				var messageStr = linkify(bbStr.html);
 				
 				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>');		
-				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
+				//$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
 				socket.emit('is typing', "no");
@@ -681,7 +715,14 @@
 	
 	
 	
-	
+		//Close the flood control message when you click it
+		$('#floodControlBubble').click(function() {
+		    $('#floodControlBubble').addClass('animated slideOutDown');	
+			$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+		        $('#floodControlBubble').removeClass();
+			    $('#floodControlContainer').css('visibility', 'hidden');
+		    });
+		});		
 	
 	    //Toggle the dropdown menu to display the online users/settings button
 	    $('#moreLI').click(function() {
@@ -886,11 +927,24 @@
 		});
 		
 		//For gathering chat messages and displaying them
-		socket.on('chat message', function(msg){
+		socket.on('chat message', function(msg) {
 			$('#messages').append(msg);
 			messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});	
 	  
+		//For telling the user you're send messages too fast
+		socket.on('dropped message', function(msg) {
+		    //alert("You're send messages too fast.  Check your privilege level");
+			//$('#floodControlContainer').css('visibility', 'visible');			
+			$('#floodControlBubble').addClass('animated slideInUp');			
+			
+			$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+		        $('#floodControlBubble').removeClass();
+			    $('#floodControlContainer').css('visibility', 'visible');
+		    });
+
+		});
+		
 		//For setting your name as a guest with a unique number (you haven't configured a name yet)
 		socket.on('guest name', function(gName) {
 			name = gName;
