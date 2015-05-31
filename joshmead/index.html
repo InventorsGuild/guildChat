@@ -603,6 +603,7 @@
 				$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + $('#messageInput').val() + '</span>'));
 				$('#messageInput').val('');
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
+				socket.emit('is typing', "no");
 			}
 			return false;
 		}); 
