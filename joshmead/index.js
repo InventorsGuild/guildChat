@@ -23,18 +23,26 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){  
     socket.on('disconnect', function(data) {
 	    for(var i=0; i<connectedUsers.length; i++) {
-		    if(socket.id == connectedUsers[i].ID) {
-				socket.broadcast.emit('disconnected user', connectedUsers[i]);			
-			    connectedUsers.splice(i, 1);
-				socket.broadcast.emit('all connections', connectedUsers);
+			for(var j=0; j<connectedUsers[i].Sockets.length; j++) {
+				if(socket.id == connectedUsers[i].Sockets[j]) {
+				    connectedUsers[i].Sockets.splice(j, 1);
+					connectedUsers[i].ConnectTimes--;
+					
+					if(connectedUsers[i].ConnectTimes == 0) {
+						socket.broadcast.emit('disconnected user', connectedUsers[i]);			
+						connectedUsers.splice(i, 1);
+						socket.broadcast.emit('all connections', connectedUsers);
+					}
+					return;
+				}
 			}
 		}
 	});
    
-    socket.on('chat message', function(msg){
+    socket.on('chat message', function(msg, guid){
 	    //Flood Control
 	    for(var i=0; i<connectedUsers.length; i++) {
-		    if(socket.id == connectedUsers[i].ID) {		
+		    if(guid == connectedUsers[i].ID) {		
 				var currentTime = Date.now();
 				var timeElapsed = (currentTime - connectedUsers[i].Check) / 1000.0;
 				connectedUsers[i].Check = currentTime;
@@ -55,15 +63,29 @@ io.on('connection', function(socket){
         //socket.broadcast.emit('chat message', msg);
     });
 	
-	socket.on('have display name', function(name) {
-	    connectedUsers[connectedUsers.length] = {Name: name, ID: socket.id, Allowance: messageRate, Check: Date.now()};
+	socket.on('have display name', function(name, guid) {
+	    for(var i=0; i<connectedUsers.length; i++) {
+		    if(guid == connectedUsers[i].ID) {
+				connectedUsers[i].ConnectTimes++;
+				connectedUsers[i].Sockets.push(socket.id);
+				return;
+			}
+		}
+	    connectedUsers[connectedUsers.length] = {Name: name, ID: guid, ConnectTimes: 1, Allowance: messageRate, Check: Date.now(), Sockets: [socket.id]};
 		socket.broadcast.emit('connected user', name);
 	});
 	
-	socket.on('need guest name', function(name) {
+	socket.on('need guest name', function(guid) {
+/*	    for(var i=0; i<connectedUsers.length; i++) {
+		    if(guid == connectedUsers[i].ID) {
+				connectedUsers[i].ConnectTimes++;				
+				connectedUsers[i].Sockets.push(socket.id);
+				return;
+			}
+		}		*/
 	    var gName = "Guest-" + guestIndex++;
 	    socket.emit('guest name', gName);
-		connectedUsers[connectedUsers.length] = {Name: gName, ID: socket.id, Allowance: messageRate, Check: Date.now()};
+		connectedUsers[connectedUsers.length] = {Name: gName, ID: guid, ConnectTimes: 1, Allowance: messageRate, Check: Date.now(), Sockets: [socket.id]};
 		socket.broadcast.emit('connected user', gName); 
 	});
 	
@@ -71,19 +93,24 @@ io.on('connection', function(socket){
 	    socket.emit('all connections', connectedUsers);
 	});
 	
-	socket.on('new display name', function(name) {
+	socket.on('new display name', function(name, guid) {
 	    for(var i=0; i<connectedUsers.length; i++) {
-		    if(socket.id == connectedUsers[i].ID) {
+		    if(guid == connectedUsers[i].ID) {
 			    connectedUsers[i].Name = name;
 				io.emit('all connections', connectedUsers);
+				
+				for(var j=0; j<connectedUsers[i].Sockets.length; j++) {
+				    if(connectedUsers[i].Sockets[j] != socket.id)
+						io.to(connectedUsers[i].Sockets[j]).emit('you changed names', name);
+				}
 			}
 		}	    
 	});
 	
-	socket.on('is typing', function(choice) {
+	socket.on('is typing', function(choice, guid) {
 	    var user;
 	    for(var i=0; i<connectedUsers.length; i++) {
-		    if(socket.id == connectedUsers[i].ID) {
+		    if(guid == connectedUsers[i].ID) {
 			    user = connectedUsers[i];
 			}	
 		}

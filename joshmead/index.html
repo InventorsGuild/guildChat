@@ -698,6 +698,7 @@
 		$('#messageForm').submit(function() {
 		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
 			if(($('#messageInput').val() != '') && (connected)) {
+			    var guid = getCookie('guid');
 				var fixedStr = stopScriptInjecting($('#messageInput').val());							
 				
 				var bbStr = XBBCODE.process({
@@ -711,12 +712,12 @@
 				
 				//var messageStr = linkify(bbStr.html);
 				
-				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>');		
+				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>', guid);		
 				//$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
 				if($('#autoScrollInput').prop('checked'))
 				    messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
-				socket.emit('is typing', "no");
+				socket.emit('is typing', "no", guid);
 			}
 			return false;
 		}); 
@@ -737,7 +738,6 @@
 		}
 	
 		function autoEmbedYouTube(str) {
-		    console.log(str);
 		    var reg = /(https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?‌​=]*)?/;
 			var match = str.match(reg);
 
@@ -793,8 +793,9 @@
 			    name = tempName;
 				setCookie("name", name, 1);				
 				if(connected) {
+					var guid = getCookie('guid');
 				    $('#connectName').text(name);								  
-				    socket.emit('new display name', name);
+				    socket.emit('new display name', name, guid);
 				}
 			}
 		}
@@ -879,15 +880,18 @@
 		
 		//For when a user is typing text/deleted all text (fire off typing identifier)
 		$('#messageInput').on('input', function() {
-		    if($(this).val().length > 0) {
-			    if(!isTyping) {
-			        isTyping = true;
-					socket.emit('is typing', "yes");
+			if(connected) {
+				var guid = getCookie('guid');
+				if($(this).val().length > 0) {
+					if(!isTyping) {
+						isTyping = true;
+						socket.emit('is typing', "yes", guid);
+					}
+				}   
+				else {
+					isTyping = false;
+					socket.emit('is typing', "no", guid);
 				}
-			}   
-			else {
-			    isTyping = false;
-			    socket.emit('is typing', "no");
 			}
 		});
 		
@@ -907,10 +911,26 @@
 				
 		//On page ready, set up name variable and connected users
 		$( document ).ready(function() {
+			var guid = getCookie('guid');
+			console.log(guid);
+			if(guid == '') {
+			    guid = setGUID();
+				//setCookie('guid', guid, 1);
+				document.cookie = 'guid='+guid+'; path=/';
+			}
 		    $('#connectText').text('Not connected');
 			$('#connectName').text('____');
 			getColors();
 		});
+	  
+		function setGUID() {
+		    function s4() {
+				return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+			}
+			
+			var id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+			return id;
+		}
 	  
 	  	//Handle the events needed for when you make connection with the server
 		function connectionStart() {
@@ -922,15 +942,18 @@
 			$('#circle').css('box-shadow', '0 0 7px #0F0');
 			
 		    $('#connectText').text('Connected as');
-			var tempName = getCookie("name");		  
+			var tempName = getCookie("name");	
+			
+			var guid = getCookie('guid');
+			
 			if(tempName != "") {
-				name = tempName;
-				socket.emit('have display name', name);
+				name = tempName;			
+				socket.emit('have display name', name, guid);					
 				$('#connectName').text(name);		
 				socket.emit('need all connections', "pls");
 			}	 
 			else
-				socket.emit('need guest name', "");		    
+				socket.emit('need guest name', guid);
 		}
 		
 		//Handle the events for if the server goes down
@@ -987,7 +1010,8 @@
 			activeWindow = true;
 			unreadMessages = 0;
 			document.title = 'Chat';
-			fadeUnreadMessageBorders();
+			//fadeUnreadMessageBorders();  /////////////////////////////////////////////////////////////// ANIMATION
+			getColors();  ///In case something changed if you have two tabs open
 		}
 		window.onblur = function() { activeWindow = false; }
 		
@@ -1034,6 +1058,7 @@
 		//For setting your name as a guest with a unique number (you haven't configured a name yet)
 		socket.on('guest name', function(gName) {
 			name = gName;
+			setCookie('name', name, '');
 			$('#connectName').text(name);
 			socket.emit('need all connections', "pls");
 		});
@@ -1070,6 +1095,12 @@
 		//For removing '[user] is typing' li 
 		socket.on('not typing', function(user) {
 		    removeIndividualTypingIndicator(user);
+		});
+		
+		//For if you change names in one active chat tab/window and you need to update the other(s)
+		socket.on('you changed names', function(tempName) {
+			name = tempName;
+		    $('#connectName').text(name);
 		});
 		//---------------------------------------------------------------------------------------------
 		
