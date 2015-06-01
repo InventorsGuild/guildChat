@@ -433,6 +433,7 @@
 	   
 	   .msg { 
 	       padding: 5px 10px; 
+		   /*border-left: 3px solid transparent;                        FOR ANIMATIONS */
 	   }
        .msg:nth-of-type(even) { 
 	       background: #eee; 
@@ -446,6 +447,12 @@
 	   .msg span { 
 	       color: #000; 
 	   }
+	   .unread {
+	        border-left-color: #0f0;
+		    transition: border-color 1s linear;
+		    -webkit-transition: border-color 1s linear;
+		    -moz-transition: border-color 1s linear;
+	   }	   
 	   
 	   .userLabel { 
 	      padding-left: 80%; 
@@ -469,7 +476,7 @@
 	   }
 	   
 	   #messageInput {
-	       width: 89%;
+	       width: 86%;
 		   padding: 10px;
            margin-right: .5%; 
 		   margin-left: 0.5%;		   
@@ -498,7 +505,24 @@
 	   }
 	   #sendButton:active {
 	      background: #8ddbea;
-	   }	   
+	   }	 
+	   
+	   #autoScrollInputContainer {
+	       display: block;
+		   position: absolute;
+		   right: 0.9%;
+		   bottom: 8px;
+	   }
+	   #autoScrollInputLabel {
+		  display: block;
+		  margin: 0 auto;
+		  color: #FFF;
+		  padding-bottom: 2px;
+	   }
+	   #autoScrollInput {
+	        display: block;
+		    margin: 0 auto;
+	   }
 	   
 	   #typingIndicatorContainer {
 	       position: absolute;
@@ -536,10 +560,11 @@
 		   bottom: 60px;
 		   margin-bottom: 0px;
 		   -webkit-margin-after: 1px;
-		   visibility: hidden;
+		   visibility: hidden;		   
 	   }
 	   
 	   #floodControlBubble {
+		   position: relative;
 		   margin: 0 auto;
 		   width: 500px;
 		   background: rgba(214,50,50, 0.7);
@@ -550,7 +575,13 @@
 		   border: 1px solid rgba(214,50,50, 0.9);
 		   text-align: center;
 	   }
-	   #floodControlContainer span {
+	   #close {
+			position: absolute;
+			top: -5px;
+			right: 0px;
+			font-size: 120% !important;
+	   }
+	   #floodControlBubble span {
 	       font-size: 140%;
 		   color: #FFF;
 		   padding: 10px;
@@ -564,6 +595,7 @@
 	</div>
 	<div id="floodControlContainer">
 	  <div id="floodControlBubble">
+	    <span id="close">X</span>
 	    <span>You're sending messages too fast.  Check your privilege</span>
 	  </div>
 	</div>
@@ -630,6 +662,10 @@
       <div id="messageFormContainer">
       <form id="messageForm" action="">
         <input id="messageInput" autofocus autocomplete="off" /><button id="sendButton">Send</button>
+		<div id="autoScrollInputContainer">
+		  <label id="autoScrollInputLabel">Scroll</label>
+		  <input id="autoScrollInput" type="checkbox" checked>
+		</div>
       </form>	 
 	  </div>
 	</div>
@@ -656,6 +692,8 @@
 		var unreadMessages = 0;
 		var activeWindow = true;
 	
+		var floodControlOn = false;
+	
 		//When you submit a message
 		$('#messageForm').submit(function() {
 		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
@@ -668,15 +706,16 @@
 					addInLineBreaks: false
 				});
 				
-				//var embedStr = autoEmbedYouTube(bbStr.html);				
-				//var messageStr = linkify(embedStr);
+				var embedStr = autoEmbedYouTube(bbStr.html);				
+				var messageStr = linkify(embedStr);
 				
-				var messageStr = linkify(bbStr.html);
+				//var messageStr = linkify(bbStr.html);
 				
 				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>');		
 				//$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
+				if($('#autoScrollInput').prop('checked'))
+				    messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
 				socket.emit('is typing', "no");
 			}
 			return false;
@@ -697,14 +736,9 @@
 			return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
 	
-	
-	
-	
-	
-		//////FIX MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 		function autoEmbedYouTube(str) {
 		    console.log(str);
-		    var reg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+		    var reg = /(https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?‌​=]*)?/;
 			var match = str.match(reg);
 
 			if(match && match[2].length == 11) {			
@@ -714,17 +748,23 @@
 			}
 			else
 			    return str;
-		}
+		}	
 	
-	
-	
+		//Close the flood control message (called from either a click or 4s delay from visible)
+		function closeFloodBubble() {
+			if(floodControlOn) {
+				floodControlOn = false;
+				$('#floodControlBubble').addClass('animated fadeOutDown');	
+				$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+					$('#floodControlBubble').removeClass();
+					$('#floodControlContainer').css('visibility', 'hidden');
+				});		
+			}
+		}	
 		//Close the flood control message when you click it
 		$('#floodControlBubble').click(function() {
-		    $('#floodControlBubble').addClass('animated slideOutDown');	
-			$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
-		        $('#floodControlBubble').removeClass();
-			    $('#floodControlContainer').css('visibility', 'hidden');
-		    });
+			closeFloodBubble();
+			
 		});		
 	
 	    //Toggle the dropdown menu to display the online users/settings button
@@ -917,11 +957,37 @@
 			});
 		}
 		
+		function fadeUnreadMessageBorders() {		    
+		    //jQuery.fn.reverse = [].reverse;	
+			
+		    //$('.unread').reverse().each(function(i) {
+			//	//console.log($(this).text());
+			//    $(this).css('border-left-color', 'transparent');
+			//});
+			
+			//for(var i=0; i<
+			var unreadMsgArray = $('.unread');
+			var iterations = unreadMsgArray.length;
+			
+			if(iterations > 0) {
+				function fade(i) {
+					setTimeout(function(){
+						$(unreadMsgArray[i]).css('border-left-color', 'transparent');
+						i++;
+						if(i<iterations) 
+							fade(i);
+					}, 250);
+				}
+				fade(0);
+			}
+		}
+		
 		//Check if the window is active or not
 		window.onfocus = function() {
 			activeWindow = true;
 			unreadMessages = 0;
 			document.title = 'Chat';
+			fadeUnreadMessageBorders();
 		}
 		window.onblur = function() { activeWindow = false; }
 		
@@ -939,24 +1005,28 @@
 		});
 		
 		//For gathering chat messages and displaying them
-		socket.on('chat message', function(msg) {
-			//Notifications in the title
-			if(!activeWindow)
-				document.title = '[' + ++unreadMessages + '] Chat';
-				
+		socket.on('chat message', function(msg) {				
 			$('#messages').append(msg);
-			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			if($('#autoScrollInput').prop('checked'))
+			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			
+			//Notifications in the title			
+			if(!activeWindow) {
+				document.title = '[' + ++unreadMessages + '] Chat';		
+				//$('#messages li:last-child').addClass('unread');      ///////////////////////ANIMATION 
+			}
 		});	
 	  
 		//For telling the user you're send messages too fast
 		socket.on('dropped message', function(msg) {
-		    //alert("You're send messages too fast.  Check your privilege level");
-			//$('#floodControlContainer').css('visibility', 'visible');			
-			$('#floodControlBubble').addClass('animated slideInUp');			
+			floodControlOn = true;
+			$('#floodControlContainer').css('visibility', 'visible');			
+			$('#floodControlBubble').addClass('animated fadeInUp');			
 			
 			$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
 		        $('#floodControlBubble').removeClass();
 			    $('#floodControlContainer').css('visibility', 'visible');
+				setTimeout(closeFloodBubble, 4000);
 		    });
 
 		});
