@@ -1042,7 +1042,8 @@
 		socket.on('connected user', function(name) {
 			$('#onlineUsers').append($('<li>').text(name));
 			$('#messages').append('<label class="userLabel">' + name + ' has connected<br></label>');
-			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			if($('#autoScrollInput').prop('checked'))
+			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});
 	  
 		//For getting all the connected users at once to append to the online users list
@@ -1057,7 +1058,8 @@
 		socket.on('disconnected user', function(user) {
 			removeIndividualTypingIndicator(user);
 			$('#messages').append('<label class="userLabel">' + user.Name + ' has disconnected<br></label>');
-			messagesContainer.scrollTop = messagesContainer.scrollHeight;
+			if($('#autoScrollInput').prop('checked'))
+			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});
 		
 		//For displaying to the chat when a user is typing
