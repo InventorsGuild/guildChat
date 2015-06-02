@@ -60,8 +60,8 @@ io.on('connection', function(socket){
 				    socket.emit('dropped message');
 				//Send the message
 				else {
-					lastMessages[lastMessagesPtrIndex%MESSAGE_QUEUE_SIZE] = msg;
-					lastMessagesPtrIndex++;
+					lastMessages[lastMessagesPtrIndex] = msg;
+					lastMessagesPtrIndex = (lastMessagesPtrIndex+1)%MESSAGE_QUEUE_SIZE;
 				    connectedUsers[i].Allowance -= 1.0;
 				    io.emit('chat message', msg);
 				}
