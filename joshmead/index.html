@@ -951,6 +951,7 @@
 				socket.emit('have display name', name, guid);					
 				$('#connectName').text(name);		
 				socket.emit('need all connections', "pls");
+				socket.emit('need last messages', 'pls');
 			}	 
 			else
 				socket.emit('need guest name', guid);
@@ -1061,6 +1062,7 @@
 			setCookie('name', name, '');
 			$('#connectName').text(name);
 			socket.emit('need all connections', "pls");
+			socket.emit('need last messages', 'pls');
 		});
 	  
 		//For getting newly connected users and appending their name to the online users list
@@ -1101,6 +1103,15 @@
 		socket.on('you changed names', function(tempName) {
 			name = tempName;
 		    $('#connectName').text(name);
+		});
+		
+		//For displaying the last messages that are stored on the server
+		socket.on('last messages', function(lastMessages) {
+		    for(var i=0; i<lastMessages.length; i++)
+			    $('#messages').append(lastMessages[i]);	  
+				
+			if($('#autoScrollInput').prop('checked'))
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;	
 		});
 		//---------------------------------------------------------------------------------------------
 		

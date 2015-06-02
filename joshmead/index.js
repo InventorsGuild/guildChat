@@ -13,6 +13,10 @@ var guestIndex = 1;
 var messageRate = 7.0;
 var messagePer = 10.0;
 
+var lastMessages = [];
+var lastMessagesPtrIndex = 0;
+var MESSAGE_QUEUE_SIZE = 50;
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
@@ -54,7 +58,10 @@ io.on('connection', function(socket){
 				//Drop the message
 				if(connectedUsers[i].Allowance < 1.0)
 				    socket.emit('dropped message');
+				//Send the message
 				else {
+					lastMessages[lastMessagesPtrIndex%MESSAGE_QUEUE_SIZE] = msg;
+					lastMessagesPtrIndex++;
 				    connectedUsers[i].Allowance -= 1.0;
 				    io.emit('chat message', msg);
 				}
@@ -119,6 +126,10 @@ io.on('connection', function(socket){
 		    socket.broadcast.emit('typing', user);
 		else
 		    socket.broadcast.emit('not typing', user);
+	});
+	
+	socket.on('need last messages', function(data) {
+	    socket.emit('last messages', lastMessages);
 	});
 });
 
