@@ -271,7 +271,7 @@
 
 		 -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
 		 -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);			  
+		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
 	   }
 	   
 	   #settingsContainer {
@@ -549,8 +549,14 @@
 		   border-left: 1px solid rgba(59, 86, 148, 0.3);
 		   border-right: 1px solid rgba(59, 86, 148, 0.3);
 	       padding: 1px 1px 1px 10px;
-	       background: #c4ccde;
+	       background: #b4bed5;
 		   color: #FFF;
+		   cursor: default;
+		   -webkit-transition: opacity 0.5s;
+		   transition: opacity 0.5s;
+	   }
+	   [data-typing]:hover {
+	       opacity: 0;
 	   }
 	   
 	   #floodControlContainer {
@@ -1255,7 +1261,7 @@
 		
 		//For displaying to the chat when a user is typing
 		socket.on('typing', function(user) {
-		    $('#typingIndicator').append('<li data-typing="yes" data-name="'+user.Name+'" data-id="'+user.ID+'">' + user.Name + ' is typing</li>');
+		    $('#typingIndicator').append('<li class="noSelect" data-typing="yes" data-name="'+user.Name+'" data-id="'+user.ID+'">' + user.Name + ' is typing</li>');
 		});
 		
 		//For removing '[user] is typing' li 
