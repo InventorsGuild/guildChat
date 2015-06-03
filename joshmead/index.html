@@ -699,6 +699,7 @@
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script src="xbbcode.js"></script>
+	<script src="Autolinker.min.js"></script>
 	<script type="text/javascript" language="javascript">
 	    
 		var socket = io();
@@ -721,21 +722,43 @@
 		var isZoomed = false;
 		//var imgSel = null;
 	
+		var autolinker = new Autolinker({
+			replaceFn : function(autolinker, match) {
+				if(match.getType() == 'url') {
+					var tempUrl = match.getUrl();
+					var fileEx = tempUrl.substr(tempUrl.lastIndexOf('.')+1);
+						
+					//Auto for image links	
+					if(['jpg','png','gif','bmp','jpeg'].indexOf(fileEx) > -1) {
+						var bStr = XBBCODE.process({
+							text: '[img]'+tempUrl+'[/img]',
+							removeMisalignedTags: false,
+							addInLineBreaks: false
+						});
+						return bStr.html;
+					}
+					else 
+						return true;
+				}
+			}				
+		});
+	
 		//When you submit a message
 		$('#messageForm').submit(function() {
 		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
 			if(($('#messageInput').val() != '') && (connected)) {
 			    var guid = getCookie('guid');
-				var fixedStr = stopScriptInjecting($('#messageInput').val());							
+				//var fixedStr = stopScriptInjecting($('#messageInput').val());							
 				
 				var bbStr = XBBCODE.process({
-					text: fixedStr,
+					text: $('#messageInput').val(),
 					removeMisalignedTags: false,
 					addInLineBreaks: false
 				});
 				
 				var embedStr = autoEmbedYouTube(bbStr.html);				
-				var messageStr = linkify(embedStr);
+				//var messageStr = linkify(embedStr);
+				var messageStr = autolinker.link(embedStr);
 				
 				//var messageStr = linkify(bbStr.html);
 				
@@ -748,7 +771,7 @@
 			}
 			return false;
 		}); 
-	
+/*	
 		function linkify(str) {
 		    var reg = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi
 			
@@ -759,11 +782,11 @@
 				    return '<a href="http://' + url + '" target="_blank">' + url + '</a>';
 			});
 		}
-	
+		
 		function stopScriptInjecting(str) {
 			return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
-	
+*/	
 		function autoEmbedYouTube(str) {
 		    var reg = /(https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?‌​=]*)?/;
 			var match = str.match(reg);
@@ -914,18 +937,21 @@
 			if(imgDarken) {
 				//If it's an image that fits normally, close it regardless if you click
 				if(!shrunkenImg) {
-					clicks++;
-					if(clicks > 2) {
-						//$(imgSel).css('opacity', '1');
-						//imgSel = null;
-						//$('#portrait').addClass('animated fadeOut');
-						//endImageAnimation();
-						$('#shadow').toggle();
-						$('#portrait').css('visibility', 'hidden');
-						//$('#portrait').toggle();
-						$('#messageInput').focus();
-						clicks = 0;
-						imgDarken = false;					
+					//Allow right clicking on the image though
+					if(event.which != 3) {
+						clicks++;
+						if(clicks > 2) {
+							//$(imgSel).css('opacity', '1');
+							//imgSel = null;
+							//$('#portrait').addClass('animated fadeOut');
+							//endImageAnimation();
+							$('#shadow').toggle();
+							$('#portrait').css('visibility', 'hidden');
+							//$('#portrait').toggle();
+							$('#messageInput').focus();
+							clicks = 0;
+							imgDarken = false;					
+						}
 					}
 				}
 				//For bigger-than-your-browser images
