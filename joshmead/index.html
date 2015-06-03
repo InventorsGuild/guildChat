@@ -592,7 +592,7 @@
 		}
 		#portrait {
 			width: 100%;
-			display: none;
+			visibility: hidden;
 			z-index: 44;
 			vertical-align: top; 
 			text-align: center; 
@@ -892,6 +892,13 @@
 				$('#changeAllSettingsButton').click();
 		});		
 	  
+		function endImageAnimation() {
+			$('#portrait').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {	
+			    $('#portrait').removeClass('animated fadeOut');			
+				$('#portrait').css('visibility', 'hidden');
+			});		    
+		}
+	  
 	    //Remove the shadow when you click anywhere besides the settingsBox/click anywhere when portrait is up
 	    $(document).on('click', function(event) {
 			if(!$(event.target).closest('#settingsBox').length) {
@@ -911,11 +918,14 @@
 					if(clicks > 2) {
 						//$(imgSel).css('opacity', '1');
 						//imgSel = null;
+						//$('#portrait').addClass('animated fadeOut');
+						//endImageAnimation();
 						$('#shadow').toggle();
-						$('#portrait').toggle();
+						$('#portrait').css('visibility', 'hidden');
+						//$('#portrait').toggle();
 						$('#messageInput').focus();
 						clicks = 0;
-						imgDarken = false;			
+						imgDarken = false;					
 					}
 				}
 				//For bigger-than-your-browser images
@@ -924,8 +934,19 @@
 					if(!$(event.target).closest('#portrait img').length) {
 						clicks++;
 						if(clicks > 2) {
+							//$('#portrait').addClass('animated fadeOut');
+							//endImageAnimation();
+							
+							//Remove excess scrollbars if you closed it when it was zoomed in
+							if(isZoomed) {
+								$('#portrait img').css('max-height', $(window).height()-10+'px');   //94%   //90%	 83%			
+								$('#portrait img').css('max-width', $(window).width()-10+'px');	
+								height = $('#portrait img')[0].clientHeight;
+								$('#portrait').css('margin-top', '-'+(height/2)+'px');						    
+							}
 							$('#shadow').toggle();
-							$('#portrait').toggle();
+							$('#portrait').css('visibility', 'hidden');
+							//$('#portrait').toggle();
 							$('#messageInput').focus();
 							imgDarken = false;	
 							clicks = 0;
@@ -937,8 +958,8 @@
 						var height;
 						//Zoom back out
 						if(isZoomed) {
-							$('#portrait img').css('max-height', '90%');   //94%
-							$('#portrait img').css('max-width', '90%');		
+							$('#portrait img').css('max-height', $(window).height()-20+'px');   //94%   //90%	 83%			
+							$('#portrait img').css('max-width', $(window).width()-20+'px');	
 							height = $('#portrait img')[0].clientHeight;
 							$('#portrait').css('margin-top', '-'+(height/2)+'px');
 							isZoomed = false;
@@ -946,10 +967,9 @@
 						}
 						//Zoom to natural size
 						else {
-							$('#portrait img').css('max-height', '');   //94%
+							$('#portrait img').css('max-height', ''); 
 							$('#portrait img').css('max-width', '');		
-							height = $('#portrait img')[0].naturalHeight;
-							$('#portrait').css('margin-top', '-'+(height/2)+'px');	
+							height = $('#portrait img')[0].naturalHeight;	
 							isZoomed = true;
 							$('#portrait img').css('cursor', 'zoom-out');
 						}
@@ -977,21 +997,27 @@
 		
 		//Display the clicked image in its full size
 		$(document).on('click', '.img', function() {
-		
 			$('#portrait').empty();		
 			$('#portrait').append(($(this).children('img').eq(0)).clone());		
 			$('#portrait img').removeAttr('style');
-			var height = $('#portrait img')[0].naturalHeight;			
-			$('#portrait img').css('max-height', '90%');   //94%
-			$('#portrait img').css('max-width', '90%');			
+			var height = $('#portrait img')[0].naturalHeight;		
+			var width = $('#portrait img')[0].naturalWidth;	
+			$('#shadow').toggle();
+			$('#portrait').css('visibility', 'visible');
+			
+			$('#portrait img').css('max-height', $(window).height()-20+'px');   //94%   //90%	 83%			
+			$('#portrait img').css('max-width', $(window).width()-20+'px');			
 			//imgSel = this;			
 			//$(this).css('opacity', '0.1');
-			$('#shadow').toggle();
-			$('#portrait').toggle();	
 			var height2 = $('#portrait img')[0].clientHeight;
+			var width2 = $('#portrait img')[0].clientWidth;			
+
+			$('#portrait').addClass('animated fadeIn');
+			//$('#portrait').toggle();	
+
 			
 			//If it's too big for the screen, still shrink it
-			if(height > height2) {
+			if((height > height2) || (width > width2)) {			
 			    $('#portrait').css('margin-top', '-'+(height2/2)+'px');
 				shrunkenImg = true;
 				$('#portrait img').css('cursor', 'zoom-in');
@@ -1001,6 +1027,11 @@
 			
 		    imgDarken = true;
 			clicks = 0;		
+			
+			$('#portrait').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {	
+			     $('#portrait').removeClass('animated fadeIn');
+			});
+			
 		});
 		
 		//Get the values for the name and text colors from cookies
