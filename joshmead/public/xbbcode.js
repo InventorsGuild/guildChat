@@ -241,7 +241,7 @@ var XBBCODE = (function() {
 					myUrl = ""; 
 				} 
 				
-				return '<iframe width="560" height="345" src="' + myUrl + '" frameborder="0" allowfullscreen></iframe>'; 
+				return '<iframe id="yt" type="text/html" width="560" height="345" src="' + myUrl + '?enablejsapi=1" frameborder="0" allowfullscreen></iframe>'; 
 			}, 
 			closeTag: function(params,content) { 
 				return ''; 

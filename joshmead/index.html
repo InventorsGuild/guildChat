@@ -806,6 +806,40 @@
 			    return str;
 		}	
 	
+	
+	    var tag = document.createElement('script');
+		tag.src = "https://www.youtube.com/iframe_api";
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+		
+		var player = [];	
+		function onYouTubeIframeAPIReady(event) {		
+			createYoutubePlayer();
+		}
+		
+		function createYoutubePlayer() {
+		    player.push(new YT.Player('yt', {
+			    events: {
+				    'onStateChange': onPlayerStateChange
+				}
+			}));
+			console.log(player);		    
+		}
+		
+		function onPlayerStateChange(event) {
+			var sel = event.target;
+		    if(event.data == YT.PlayerState.PLAYING) {
+			    //event.target.a.width = "560px";
+				//event.target.a.height = "345px";		
+				event.target.setSize(560, 345);
+			}
+			else if((event.data == YT.PlayerState.PAUSED) || (event.data == YT.PlayerState.ENDED)) {
+				//event.target.a.width = "355px";
+				//event.target.a.height = "200px";
+				event.target.setSize(355, 200);
+			}
+		}
+	
 		//Close the flood control message (called from either a click or 4s delay from visible)
 		function closeFloodBubble() {
 			if(floodControlOn) {
@@ -1200,8 +1234,11 @@
 		});
 		
 		//For gathering chat messages and displaying them
-		socket.on('chat message', function(msg) {				
-			$('#messages').append(msg);
+		socket.on('chat message', function(msg) {	
+			$('#messages').append(msg);		
+			if(msg.indexOf('<iframe id="yt"') -1) {
+			    createYoutubePlayer();
+			}    
 			if($('#autoScrollInput').prop('checked'))
 			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 			
