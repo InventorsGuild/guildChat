@@ -1106,9 +1106,11 @@
 		});
 		
 		//For displaying the last messages that are stored on the server
-		socket.on('last messages', function(lastMessages) {
-		    for(var i=0; i<lastMessages.length; i++)
-			    $('#messages').append(lastMessages[i]);	  
+		socket.on('last messages', function(lastMessages, index, size) {
+		    for(var i=0; i<lastMessages.length; i++) {
+			    $('#messages').append(lastMessages[index]);	 
+				index=(index+1)%size
+			}
 				
 			if($('#autoScrollInput').prop('checked'))
 				messagesContainer.scrollTop = messagesContainer.scrollHeight;	

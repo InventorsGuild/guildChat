@@ -129,7 +129,7 @@ io.on('connection', function(socket){
 	});
 	
 	socket.on('need last messages', function(data) {
-	    socket.emit('last messages', lastMessages);
+	    socket.emit('last messages', lastMessages, lastMessagesPtrIndex-1, MESSAGE_QUEUE_SIZE);
 	});
 });
 
