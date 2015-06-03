@@ -15,7 +15,7 @@ var messagePer = 10.0;
 
 var lastMessages = [];
 var lastMessagesPtrIndex = 0;
-var MESSAGE_QUEUE_SIZE = 50;
+var MESSAGE_QUEUE_SIZE = 1000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -129,7 +129,7 @@ io.on('connection', function(socket){
 	});
 	
 	socket.on('need last messages', function(data) {
-	    socket.emit('last messages', lastMessages, lastMessagesPtrIndex-1, MESSAGE_QUEUE_SIZE);
+	    socket.emit('last messages', lastMessages, lastMessagesPtrIndex, MESSAGE_QUEUE_SIZE);
 	});
 });
 

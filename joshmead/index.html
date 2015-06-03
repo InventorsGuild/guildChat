@@ -1107,9 +1107,16 @@
 		
 		//For displaying the last messages that are stored on the server
 		socket.on('last messages', function(lastMessages, index, size) {
-		    for(var i=0; i<lastMessages.length; i++) {
-			    $('#messages').append(lastMessages[index]);	 
-				index=(index+1)%size
+			console.log(lastMessages);
+			var i;
+		    if(lastMessages.length == size)
+			    i=index;
+			else
+			    i=0;
+				
+		    for(var j=0; j<lastMessages.length; j++) {
+			    $('#messages').append(lastMessages[i]);	 
+				i=(i+1)%size
 			}
 				
 			if($('#autoScrollInput').prop('checked'))
