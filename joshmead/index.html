@@ -587,6 +587,26 @@
 		   padding: 10px;
 	   }
 	   
+		.img{
+	       display: inline;
+		}
+		#portrait {
+			width: 100%;
+			display: none;
+			z-index: 44;
+			vertical-align: top; 
+			text-align: center; 
+			position: absolute;
+			top: 50%; 
+		}
+		#portrait img {
+		    z-index: 45;
+			-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+			-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+			box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);				
+		}
+	   
+	   
 	</style>
   </head>
   <body>
@@ -658,6 +678,8 @@
 	  </div>	  
 	  
 
+	  <div id="portrait"></div>
+	  
    
       <div id="messageFormContainer">
       <form id="messageForm" action="">
@@ -693,6 +715,11 @@
 		var activeWindow = true;
 	
 		var floodControlOn = false;
+	
+		var imgDarken = false;
+		var shrunkenImg = false;
+		var isZoomed = false;
+		//var imgSel = null;
 	
 		//When you submit a message
 		$('#messageForm').submit(function() {
@@ -865,7 +892,7 @@
 				$('#changeAllSettingsButton').click();
 		});		
 	  
-	    //Remove the shadow when you click anywhere besides the settingsBox
+	    //Remove the shadow when you click anywhere besides the settingsBox/click anywhere when portrait is up
 	    $(document).on('click', function(event) {
 			if(!$(event.target).closest('#settingsBox').length) {
 				clicks++;
@@ -874,8 +901,61 @@
 					$('#settingsBox').toggle();
 					$('#messageInput').focus();	 
 					darken = false;	
+					clicks = 0;
 				}
 			}
+			if(imgDarken) {
+				//If it's an image that fits normally, close it regardless if you click
+				if(!shrunkenImg) {
+					clicks++;
+					if(clicks > 2) {
+						//$(imgSel).css('opacity', '1');
+						//imgSel = null;
+						$('#shadow').toggle();
+						$('#portrait').toggle();
+						$('#messageInput').focus();
+						clicks = 0;
+						imgDarken = false;			
+					}
+				}
+				//For bigger-than-your-browser images
+				else {
+					//If you click outside the image, close it
+					if(!$(event.target).closest('#portrait img').length) {
+						clicks++;
+						if(clicks > 2) {
+							$('#shadow').toggle();
+							$('#portrait').toggle();
+							$('#messageInput').focus();
+							imgDarken = false;	
+							clicks = 0;
+							shrunkenImg = false;
+						}
+					}
+					//If you click the image, zoom in/out
+					else {
+						var height;
+						//Zoom back out
+						if(isZoomed) {
+							$('#portrait img').css('max-height', '90%');   //94%
+							$('#portrait img').css('max-width', '90%');		
+							height = $('#portrait img')[0].clientHeight;
+							$('#portrait').css('margin-top', '-'+(height/2)+'px');
+							isZoomed = false;
+							$('#portrait img').css('cursor', 'zoom-in');
+						}
+						//Zoom to natural size
+						else {
+							$('#portrait img').css('max-height', '');   //94%
+							$('#portrait img').css('max-width', '');		
+							height = $('#portrait img')[0].naturalHeight;
+							$('#portrait').css('margin-top', '-'+(height/2)+'px');	
+							isZoomed = true;
+							$('#portrait img').css('cursor', 'zoom-out');
+						}
+					}
+				}
+			} 
 		});
 		
 		//For when a user is typing text/deleted all text (fire off typing identifier)
@@ -895,6 +975,33 @@
 			}
 		});
 		
+		//Display the clicked image in its full size
+		$(document).on('click', '.img', function() {
+		
+			$('#portrait').empty();		
+			$('#portrait').append(($(this).children('img').eq(0)).clone());		
+			$('#portrait img').removeAttr('style');
+			var height = $('#portrait img')[0].naturalHeight;			
+			$('#portrait img').css('max-height', '90%');   //94%
+			$('#portrait img').css('max-width', '90%');			
+			//imgSel = this;			
+			//$(this).css('opacity', '0.1');
+			$('#shadow').toggle();
+			$('#portrait').toggle();	
+			var height2 = $('#portrait img')[0].clientHeight;
+			
+			//If it's too big for the screen, still shrink it
+			if(height > height2) {
+			    $('#portrait').css('margin-top', '-'+(height2/2)+'px');
+				shrunkenImg = true;
+				$('#portrait img').css('cursor', 'zoom-in');
+			}
+			else
+			    $('#portrait').css('margin-top', '-'+(height/2)+'px');
+			
+		    imgDarken = true;
+			clicks = 0;		
+		});
 		
 		//Get the values for the name and text colors from cookies
 		function getColors() {
@@ -910,7 +1017,7 @@
 		}
 				
 		//On page ready, set up name variable and connected users
-		$( document ).ready(function() {
+		$( document ).ready(function() {		
 			var guid = getCookie('guid');
 			console.log(guid);
 			if(guid == '') {
@@ -1107,7 +1214,6 @@
 		
 		//For displaying the last messages that are stored on the server
 		socket.on('last messages', function(lastMessages, index, size) {
-			console.log(lastMessages);
 			var i;
 		    if(lastMessages.length == size)
 			    i=index;
