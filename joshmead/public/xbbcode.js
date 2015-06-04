@@ -240,7 +240,7 @@ var XBBCODE = (function() {
 					myUrl = ""; 
 				} 
 				
-				return '<iframe id="yt" type="text/html" width="560" height="345" src="' + myUrl + '" frameborder="0" allowfullscreen></iframe>'; 
+				return '<div class="videoContainer"><div class="resizer" data-zoom="+"></div><iframe class="yt" type="text/html" width="325" height="200" src="' + myUrl + '" frameborder="0" allowfullscreen></iframe></div>'; 
 			}, 
 			closeTag: function(params,content) { 
 				return ''; 

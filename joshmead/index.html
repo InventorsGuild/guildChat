@@ -612,7 +612,33 @@
 			box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);	*/			
 		}
 	   
-	   
+		.videoContainer {
+		    width: 325px;
+			height: 200px;
+			position: relative;
+			margin-left: 1%;
+		}
+		.videoContainer:hover .resizer {
+		    opacity: 0.2;
+		}
+		.resizer {
+		    opacity: 0;
+			border-radius: 10px; 
+		   -moz-border-radius: 10px; 
+		   -webkit-border-radius: 10px;
+		   position: absolute;
+		   top: 5px;
+		   right: 5px;
+		   width: 40px;
+		   height: 40px;
+		   /*background: #EEE;*/
+		   text-align: center;
+		    background-image: url("+.png");				   
+		}
+		.resizer:hover {
+		    opacity: 0.6 !important;
+		}
+		
 	</style>
   </head>
   <body>
@@ -805,6 +831,27 @@
 			else
 			    return str;
 		}	
+	
+		//For adjusting the height and width of a video player
+		$(document).on('click', '.resizer', function() {
+		    //Enlarge
+		    if($(this).data('zoom') == '+') {
+				$(this).parent().css('width', '560px');
+				$(this).parent().css('height', '345px');
+				$(this).siblings('.yt').css('width', '560px');
+				$(this).siblings('.yt').css('height', '345px');
+				$(this).css('background-image', 'url("-.png")');				
+			    $(this).data('zoom', '-');				
+			}
+			else {	//Shrink 
+				$(this).parent().css('width', '325px');
+				$(this).parent().css('height', '200px');
+				$(this).siblings('.yt').css('width', '325px');
+				$(this).siblings('.yt').css('height', '200px');
+				$(this).css('background-image', 'url("+.png")');	
+			    $(this).data('zoom', '+');				
+			}
+		});
 	
 		//Close the flood control message (called from either a click or 4s delay from visible)
 		function closeFloodBubble() {
