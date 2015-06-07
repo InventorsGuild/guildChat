@@ -1,18 +1,17 @@
 var app = require('express')();
-var http = require ('http').Server(app);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-http.port = 3000;
-
-app.get('/', function(req, res) {
-    console.log("Accessed: /");
-    res.send('Root is where it\'s at');
-});
-   
-app.get('/power', function(req, res) {
-    console.log("Accessed: /power");
-    res.send('Power is where you are');
+app.get('/', function(req, res){
+  res.sendfile('index.html');
 });
 
-http.listen(http.port, function() {
-    console.log('listening on : ' + http.port );
+io.on('connection', function(socket){
+  socket.on('chat message', function(msg){
+    console.log('message: ' + msg);
+  });
+});
+
+http.listen(8080, function(){
+  console.log('listening on *:8080');
 });
