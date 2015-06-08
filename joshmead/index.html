@@ -617,26 +617,32 @@
 			height: 200px;
 			position: relative;
 			margin-left: 1%;
+			z-index: 18;
 		}
-		.videoContainer:hover .resizer {
+		.msg:hover .resizer {
 		    opacity: 0.2;
 		}
+		.yt {
+		    z-index: 14;
+		}
 		.resizer {
+			z-index: 16;
 		    opacity: 0;
 			border-radius: 10px; 
 		   -moz-border-radius: 10px; 
 		   -webkit-border-radius: 10px;
 		   position: absolute;
-		   top: 5px;
-		   right: 5px;
+		   top: 0;
+		   right: -40px;
 		   width: 40px;
 		   height: 40px;
 		   /*background: #EEE;*/
 		   text-align: center;
-		    background-image: url("+.png");				   
+		    background-image: url("+.png");	
+			cursor: pointer;
 		}
 		.resizer:hover {
-		    opacity: 0.6 !important;
+		    opacity: 0.5 !important;
 		}
 		
 	</style>
@@ -831,25 +837,28 @@
 			else
 			    return str;
 		}	
-	
+
 		//For adjusting the height and width of a video player
-		$(document).on('click', '.resizer', function() {
-		    //Enlarge
-		    if($(this).data('zoom') == '+') {
-				$(this).parent().css('width', '560px');
-				$(this).parent().css('height', '345px');
-				$(this).siblings('.yt').css('width', '560px');
-				$(this).siblings('.yt').css('height', '345px');
-				$(this).css('background-image', 'url("-.png")');				
-			    $(this).data('zoom', '-');				
-			}
-			else {	//Shrink 
-				$(this).parent().css('width', '325px');
-				$(this).parent().css('height', '200px');
-				$(this).siblings('.yt').css('width', '325px');
-				$(this).siblings('.yt').css('height', '200px');
-				$(this).css('background-image', 'url("+.png")');	
-			    $(this).data('zoom', '+');				
+		$(document).on('mouseup', '.videoContainer', function(event) {
+			if ( $(event.target).closest('.resizer').length > 0 ) {
+				var res = $(this).find('.resizer');
+				//Enlarge
+				if($(res).data('zoom') == '+') {
+					$(this).css('width', '560px');
+					$(this).css('height', '345px');
+					$(res).siblings('.yt').css('width', '560px');
+					$(res).siblings('.yt').css('height', '345px');
+					$(res).css('background-image', 'url("-.png")');				
+					$(res).data('zoom', '-');				
+				}
+				else {	//Shrink 
+					$(this).css('width', '325px');
+					$(this).css('height', '200px');
+					$(res).siblings('.yt').css('width', '325px');
+					$(res).siblings('.yt').css('height', '200px');
+					$(res).css('background-image', 'url("+.png")');	
+					$(res).data('zoom', '+');				
+				}
 			}
 		});
 	
