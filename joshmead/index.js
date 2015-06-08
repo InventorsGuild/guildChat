@@ -60,9 +60,18 @@ io.on('connection', function(socket){
 				    socket.emit('dropped message');
 				//Send the message
 				else {
+					var date = new Date();
+				    var day = date.getDate();
+					var month = date.getMonth()+1;
+					var h = date.getHours();
+					var m = date.getMinutes();
+					var s = date.getSeconds();
+					var timestamp = '<span class="timestamp noSelect">&nbsp;&nbsp;&nbsp;&nbsp;<span class="month">'+month+'/</span><span class="day">'+day+'&nbsp;</span><span class="time">'+h+':'+m+'.'+s+'</span></span>';					
+					msg = msg.slice(0, msg.length-5) + timestamp + msg.slice(msg.length-5);				
+				
 					lastMessages[lastMessagesPtrIndex] = msg;
 					lastMessagesPtrIndex = (lastMessagesPtrIndex+1)%MESSAGE_QUEUE_SIZE;
-				    connectedUsers[i].Allowance -= 1.0;
+				    connectedUsers[i].Allowance -= 1.0;					
 				    io.emit('chat message', msg);
 				}
 			}

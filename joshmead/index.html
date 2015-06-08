@@ -645,6 +645,18 @@
 		    opacity: 0.5 !important;
 		}
 		
+		.msg:hover .timestamp {
+		    opacity: 0.25 !important;
+		}		
+		.timestamp {
+		    opacity: 0.25;
+			font-size: 90%;
+			-webkit-transition: opacity 1s;
+		    transition: opacity 1s;			
+			cursor: default;
+		}
+
+		
 	</style>
   </head>
   <body>
@@ -800,7 +812,7 @@
 				
 				//var messageStr = linkify(bbStr.html);
 				
-				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>', guid);		
+				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span><span class="timestamp"></span></li>', guid);		
 				//$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
 				if($('#autoScrollInput').prop('checked'))
@@ -1256,8 +1268,8 @@
 		});
 		
 		//For gathering chat messages and displaying them
-		socket.on('chat message', function(msg) {	
-			$('#messages').append(msg);		
+		socket.on('chat message', function(msg) {			
+			$('#messages').append(msg);						
 			if($('#autoScrollInput').prop('checked'))
 			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 			
@@ -1266,6 +1278,10 @@
 				document.title = '[' + ++unreadMessages + '] Chat';		
 				//$('#messages li:last-child').addClass('unread');      ///////////////////////ANIMATION 
 			}
+			setTimeout(function(ele) {
+				console.log($(ele));
+			    $(ele).find('.timestamp').css('opacity', '0');
+			}, 10000, $('.msg').last());
 		});	
 	  
 		//For telling the user you're send messages too fast
@@ -1342,6 +1358,10 @@
 		    for(var j=0; j<lastMessages.length; j++) {
 			    $('#messages').append(lastMessages[i]);	 
 				i=(i+1)%size
+				setTimeout(function(ele) {
+					console.log($(ele));
+					$(ele).find('.timestamp').css('opacity', '0');
+				}, 3000, $('.msg').last());
 			}
 				
 			if($('#autoScrollInput').prop('checked'))
