@@ -433,6 +433,8 @@
 	   
 	   .msg { 
 	       padding: 5px 10px; 
+		   padding-right: 18%;
+		   word-wrap: break-word;
 		   /*border-left: 3px solid transparent;                        FOR ANIMATIONS */
 	   }
        .msg:nth-of-type(even) { 
@@ -644,16 +646,18 @@
 		.resizer:hover {
 		    opacity: 0.5 !important;
 		}
-		
+/*		
 		.msg:hover .timestamp {
-		    opacity: 0.25 !important;
-		}		
+		    opacity: 0.4 !important;
+		}	*/	
 		.timestamp {
-		    opacity: 0.25;
+		    opacity: 0.4;
 			font-size: 90%;
-			-webkit-transition: opacity 1s;
-		    transition: opacity 1s;			
+			-webkit-transition: opacity 0.5s;
+		    transition: opacity 0.5s;			
 			cursor: default;
+			position: absolute;
+			right: 0.5%;
 		}
 
 		
@@ -812,7 +816,7 @@
 				
 				//var messageStr = linkify(bbStr.html);
 				
-				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span><span class="timestamp"></span></li>', guid);		
+				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>', guid);		
 				//$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
 				if($('#autoScrollInput').prop('checked'))
@@ -1253,6 +1257,98 @@
 			getColors();  ///In case something changed if you have two tabs open
 		}
 		window.onblur = function() { activeWindow = false; }
+
+
+		//Add the correct HTML to the timestamp
+		var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Aug', 'Oct', 'Nov', 'Dec'];		
+		function setTimestamp(timestampEle) {
+		    var date = new Date($(timestampEle).data('time'));
+			var day = date.getDate();
+			var monthI = date.getMonth();
+			var month = monthNames[monthI];
+			var year = date.getFullYear();
+			var hour = date.getHours();
+			var min = date.getMinutes();
+			var amPM = "AM";
+			
+			if(hour >= 12) {
+			    hour -= 12;
+				amPM = "PM";
+			}	
+			if(hour == 0)
+			    hour = 12;			
+			if(min < 10)
+			   min = '0'+min;
+			
+			$(timestampEle).html('&nbsp;&nbsp;&nbsp;&nbsp;<span class="yest">Yesterday&nbsp;</span><span class="month">' + month + 
+								 '&nbsp;</span><span class="day">' + day + '</span><span class="year">,&nbsp;' + year + 
+								 '&nbsp;</span><span class="hour">' + hour + ':</span><span class="min">' + min + 
+								 '&nbsp;</span><span class="amPM">' + amPM + '</span>');
+		}
+		
+		//Toggle the correct elements in the timestamp
+		function formatTimestamp(timestampEle) {
+			var now = new Date();
+			
+		    var date = new Date($(timestampEle).data('time'));
+			var day = date.getDate();
+			var monthI = date.getMonth();
+			var month = monthNames[monthI];
+			var year = date.getFullYear();
+			//var hours = date.getHours();
+			//var mins = date.getMinutes();
+			
+			//Check if it's the same year
+			if(year == now.getFullYear()) {
+				$(timestampEle).find('.year').hide();
+				//Check if it's the same month
+			    if(monthI == now.getMonth()) {
+					//Check if it's the same day
+				    if(day == now.getDate()) {
+						$(timestampEle).find('.month').hide();
+						$(timestampEle).find('.day').hide();
+						$(timestampEle).find('.yest').hide();
+					}
+					//Check if it's yesterday
+					else if(day+1 == now.getDate()) {
+						$(timestampEle).find('.month').hide();
+						$(timestampEle).find('.day').hide();
+						$(timestampEle).find('.yest').show();					
+					}
+					else {
+						$(timestampEle).find('.month').show();
+						$(timestampEle).find('.day').show();
+						$(timestampEle).find('.yest').hide();				
+					}
+				}
+				else {
+					$(timestampEle).find('.month').show();
+					$(timestampEle).find('.day').show();
+					$(timestampEle).find('.yest').hide();				    
+				}			    
+			}
+			else {
+			    $(timestampEle).find('.year').show();
+				$(timestampEle).find('.month').show();
+				$(timestampEle).find('.day').show();
+				$(timestampEle).find('.yest').hide();
+			}
+		}
+		
+		//Fade the timestamp after a length of time
+		function fadeTimestamp(timestampEle, length) {
+		    setTimeout(function(ele) {
+			    $(ele).css('opacity', '0');
+			}, length, timestampEle);
+		}
+		
+		$(document).on('mouseenter', '.msg', function() {
+		    formatTimestamp($(this).find('.timestamp'));
+		    $(this).find('.timestamp').css('opacity', '0.4');
+		});
+		$(document).on('mouseleave', '.msg', function() {
+		    $(this).find('.timestamp').css('opacity', '0');
+		});
 		
 		//------------Handle all socket identifiers ---------------------------------------------------
 		//For handling the startup of a connection to the server
@@ -1268,8 +1364,11 @@
 		});
 		
 		//For gathering chat messages and displaying them
-		socket.on('chat message', function(msg) {			
-			$('#messages').append(msg);						
+		socket.on('chat message', function(msg) {		
+			$('#messages').append(msg);					
+			setTimestamp($('.msg').last().find('.timestamp'));
+			formatTimestamp($('.msg').last().find('.timestamp'));
+			
 			if($('#autoScrollInput').prop('checked'))
 			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 			
@@ -1278,10 +1377,8 @@
 				document.title = '[' + ++unreadMessages + '] Chat';		
 				//$('#messages li:last-child').addClass('unread');      ///////////////////////ANIMATION 
 			}
-			setTimeout(function(ele) {
-				console.log($(ele));
-			    $(ele).find('.timestamp').css('opacity', '0');
-			}, 10000, $('.msg').last());
+			
+			fadeTimestamp($('.msg').last().find('.timestamp'), 20000);			//////////////////////////////////////FADE
 		});	
 	  
 		//For telling the user you're send messages too fast
@@ -1357,11 +1454,10 @@
 				
 		    for(var j=0; j<lastMessages.length; j++) {
 			    $('#messages').append(lastMessages[i]);	 
+				setTimestamp($('.msg').last().find('.timestamp'));
+				formatTimestamp($('.msg').last().find('.timestamp'));
+				fadeTimestamp($('.msg').last().find('.timestamp'), 8000);			//////////////////////////////////////FADE
 				i=(i+1)%size
-				setTimeout(function(ele) {
-					console.log($(ele));
-					$(ele).find('.timestamp').css('opacity', '0');
-				}, 3000, $('.msg').last());
 			}
 				
 			if($('#autoScrollInput').prop('checked'))
