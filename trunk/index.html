@@ -22,646 +22,13 @@
    <meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
    <meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
    <meta name="msapplication-square310x310logo" content="mstile-310x310.png" />
-   
+
    <link rel="stylesheet" type="text/css" href="xbbcode.css">
-   <link rel="stylesheet" href="animate.min.css">
+   <link rel="stylesheet" href="public/animate.min.css"/>
+   <link rel="stylesheet" href="assets/css/style.css"/>
+
     <title>Chat</title>
-    <style>
-	   * {
-	      -webkit-padding-start: 0px;
-	   }
-	   body {
-	       margin: 0;
-		   padding: 0;
-		   font: 13px Helvetica; 
-	   }
-	
-	   #container { 
-		  min-width: 1200px;
-		  height: 100%;
-		  z-index: 10;
-	   }
-	   #header { 
-	       position: relative;
-	       height: 60px; 
-		   width: 100%;
-	       text-align: center;
-		   background: #3B5694; 
-		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);	
-	   }
-	   #circle { 
-	       left: 60px; 
-		   top: 16px; 
-	       width: 20px; 
-		   height: 20px; 
-	       position: absolute;
-		   text-align: left; 
-		   background: #E60000;
-		   -webkit-border-radius: 50%; 
-		   -moz-border-radius: 50%; 
-		   border-radius: 50%; 
-		   border: 2px solid #B20000;		
-		   -webkit-box-shadow: 0 0 7px #F00;
-		  -moz-box-shadow: 0 0 7px #F00;
-		   box-shadow: 0 0 7px #F00;   
-	   }
-	   #nameBox { 
-	       position: relative;
-		   -webkit-padding-before: 4px;
-	   }
-	   #connectText { 
-	       margin-bottom: 5px;
-		   display: block;
-	       color: #FFF;
-		   font-size: 95%;
-	   }
-	   #connectName { 
-	        color: #FFF; 
-			font-size: 155%;
-	   }
 
-	   .noSelect {
-		   -webkit-touch-callout: none;
-		   -webkit-user-select: none;
-		   -khtml-user-select: none;
-		   -moz-user-select: none;
-		   -ms-user-select: none;
-		   user-select: none;
-	   }
-	   
-	   #moreUL {
-		  position: relative;
-		  top: -25px;
-	      left: 40%;
-	      text-align: left;
-		  display: inline;
-		  margin: 0;
-		  padding: 10px 4px 12px 0;
-		  list-style: none;
-		  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);		  
-	   }
-	   
-	   #moreLI {
-	       font: bold 12px/18px sans-serif;
-		   display: inline-block;
-		   margin-right: -4px;
-		   position: relative;
-		   padding: 10px 40px;
-		   background: #fff;
-		   cursor: pointer;
-		   -webkit-transition: all 0.2s;
-		   -moz-transition: all 0.2s;
-		   -ms-transition: all 0.2s;
-		   -o-transition: all 0.2s;
-		   transition: all 0.2s;
-		   
-		   border-radius: 5px 5px 0px 0px;
-		   -moz-border-radius: 5px 5px 0px 0px;
-		   -webkit-border-radius: 5px 5px 0px 0px;
-	   }
-	   
-	   #moreLI:hover {
-		   background: #eee;      
-	   }	   
-	   #moreLI:active {
-	       background: #ccc;
-	   }
-       
-	   
-	   #dropDown {
-	      text-align: left;
-		  display: inline;
-		  margin: 0;
-		  padding: 10px 4px 12px 0;
-		  list-style: none;
-		  
-		  position: absolute;
-		  top: 29px;
-		  left: -151px;
-		  width: 150px;
-		  -webkit-box-shadow: none;
-		  -moz-box-shadow: none;
-		  box-shadow: none;
-		  display: none;	
-		  
-		  -webkit-transiton: opacity 0.5s;
-		  -moz-transition: opacity 0.5s;
-		  -ms-transition: opacity 0.5s;
-		  -o-transition: opacity 0.5s;
-		  -transition: opacity 0.5s;
-		  z-index: 40;
-	   }
-	   
-	   #moreDropDown {
-	      cursor: default;
-	      width: 260px;
-		  height: 380px;
-	      background: #8196C8;
-		  display: block;
-		  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-	   }
-	   
-	   #onlineContainer { 
-	      vertical-align: top; 
-		  display: inline-box;
-	      padding-top: 15px;
-	      text-align: center;
-	   }
-	   
-	   #onlineUsersSpan {
-	       color: #fff;
-		   font-size: 125%; 
-		   font-weight: bold;
-	   }
-	   
-	   #onlineUsersScrollable {
-	       position: relative;
-	       height: 260px;
-		   width: 190px;		   
-	       overflow-y: auto;
-		   overflow-x: hidden;
-	       margin-top: 3px; 		
-		   left: 12.5%;
-		   background: #fff;
-		   -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
-		   -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
-		   box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);		   
-	   }
-	   
-	   #onlineUsers {
-	       height: 100%;
-	       background: #fff;
-		   list-style-type: none; 
-		   display: block;
-	   }
-	   
-	   #onlineUsers li {
-	      position: relative;
-		  width: 178px;
-	      padding: 3px 6px;
-		  left: -40px;
-		  -webkit-margin-start: 40px;
-		  text-align: left;
-		  font-size: 95%;
-		  font-style: default;
-	   }
-	   #onlineUsers li:nth-child(odd) { 
-	      background: #eee; 
-	   }
-	   
-	   #settingsButton {
-	       font: bold 12px/18px sans-serif;
-		   display: inline-block;
-		   margin-right: -5px;
-		   -webkit-margin-start: 5px;
-		   position: relative;
-		   padding: 10px 20px;
-		   background: #fff;
-		   cursor: pointer;	    
-		   border: 0;
-		   border-radius: 5px; 
-		   -moz-border-radius: 5px; 
-		   -webkit-border-radius: 5px;
-		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	
-		   
-		   position:relative;
-		   left: 130px;
-		   top: 20px;
-	   }
-	   
-	   #settingsButton:hover {
-		   background: #eee;      
-	   }	   
-	   #settingsButton:active {
-	       background: #ccc;
-	   }
-	   
-	   #shadow {
-	       background: #000; 
-		   position: fixed; 
-		   left: 0; 
-		   right: 0; 
-		   width: 100%; 
-		   height: 100%; 
-		   z-index: 42; 
-		   display: none; 
-		   opacity: 0.7; 
-		   filter:progid:DXImageTransform.Microsoft.BasicImage(opacity=.7);
-	   }
-	   
-	   #settingsBox {
-	      position: absolute;
-	      background: #fff; 
-		  left: 50%; 
-		  top: 50%; 
-		  height: 300px; 
-		  width: 400px; 
-		  margin-top: -150px; 
-		  margin-left: -200px; 
-		  display: none; 
-		  z-index: 44; 	
-
-		 -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		 -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-	   }
-	   
-	   #settingsContainer {
-	      vertical-align: top; 
-		  text-align: center; 
-		  z-index: 45;
-		  display: block;
-	   }
-	   
-	   #settingsHeader {
-	      position: relative;
-		  width: 100%;
-		  background: #3B5694;
-		  padding-top: 10px; 
-		  padding-bottom: 10px;
-		  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	 
-	   }
-	   
-	   #settingsLabel {
-	       color: #fff;
-	       font-size: 150%;
-	   }
-	   
-	   #nameChangeContainer {
-	      padding-top: 40px; 
-	      vertical-align: top; 
-	      display: inline-block;
-	   }
-	   
-	   #displayNameSpan {
-	       font-size: 125%;
-	   }
-	   
-	   #changeNameInput {
-	      padding: 5px; 
-		  width: 75%; 
-		  margin-right: 2%; 
-		  margin-left: 3%;
-		  -webkit-border-radius: 5px;
-		  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-		  -moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-		  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);			  
-	   }
-	   
-	   #colorContainer {
-	       width: 400px;
-	   }
-	   
-	   .colorChangeContainer {
-	      vertical-align: bottom;     
-		  margin-left: -83px;
-		  margin-bottom: -10px;
-		  -webkit-margin-start: -103px;
-	   }
-	   
-	   .colorSpanInput {
-		   margin-right: -25px;
-		   vertical-align: top;
-	       display: inline;
-		   margin-right: -5px;
-	   }
-	   
-	   #colorChangeNameSpan {
-	      font-size: 110%;
-		  margin-left: -32px;
-		  -webkit-margin-start: -32px;
-	      padding-top: 20px;
-		  -webkit-padding-before: 10px;
-		  display: block;
-	   }
-	   
-	   #colorChangeTextSpan {
-	      font-size: 110%;
-		  margin-left: -37px;
-		  -webkit-margin-start: -37px;
-	      padding-top: 20px;
-		  -webkit-padding-before: 19px;
-		  display: block;	       
-	   }
-	   
-	   .hex {
-	       font-size: 125%;
-		   margin-right: -9px;
-	   }
-	   
-	   .colorChangeInput {
-	      display: inline-block;
-		  padding: 5px; 
-		  width: 70px; 
-		  margin-right: 2%; 
-		  margin-left: 3%;
-		  -webkit-margin-after: -20px;
-		  -webkit-border-radius: 5px;
-		  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-		  -moz-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-		  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);	      
-	   }
-	   
-	   .colorPreview {
-	       -webkit-margin-after: -9px;
-	       padding-left: 5px; 
-	       display: inline-block;
-		   position: relative;
-		   height: 28px;
-		   width: 40px;
-		   bottom: 0;
-		   border-radius: 5px; 
-		   -moz-border-radius: 5px; 
-		   -webkit-border-radius: 5px;
-	   }	   
-	   
-	   #changeAllSettingsButton {
-		   display: block;
-		   position: absolute;
-		   bottom: 37px;
-		   right: 30px;
-		   
-	       font: bold 12px/18px sans-serif;
-		   display: inline-block;
-		   margin-right: -4px;
-		   padding: 8px 20px;
-		   background: #fff;
-		   cursor: pointer;	    
-		   border: 1px solid rgba(100, 100, 100, 0.3);	
-		   border-radius: 5px; 
-		   -moz-border-radius: 5px; 
-		   -webkit-border-radius: 5px;
-		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	   
-	   }
-	   
-	   #changeAllSettingsButton:hover {
-	      background: #eee;  
-	   }
-	   
-	   #changeAllSettingsButton:active {
-	      background: #ccc;  
-	   }
-	   
-	   #messagesContainer {
-	       position: absolute;
-		   width: 100%;
-		   overflow-y: auto;	
-		   bottom: 45px;
-		   top: 60px;
-		   z-index: 5;
-	   }
-	   
-	   #messages {	    
-	       list-style-type: none; 
-		   margin: 0; 
-		   padding: 0; 
-		   display: block;
-		   z-index: 5;
-	   }
-	   
-	   .msg { 
-	       padding: 5px 10px; 
-		   padding-right: 18%;
-		   word-wrap: break-word;
-		   /*border-left: 3px solid transparent;                        FOR ANIMATIONS */
-	   }
-       .msg:nth-of-type(even) { 
-	       background: #eee; 
-		   z-index: 5;
-	   }
-	   .msg label {
-	       color: #414163; 
-		   font-weight: bold; 
-		   padding-right: 25px; 
-	   }
-	   .msg span { 
-	       color: #000; 
-	   }
-	   .unread {
-	        border-left-color: #0f0;
-		    transition: border-color 1s linear;
-		    -webkit-transition: border-color 1s linear;
-		    -moz-transition: border-color 1s linear;
-	   }	   
-	   
-	   .userLabel { 
-	      padding-left: 80%; 
-		  font-size: 10x; 
-		  font-style: italic; 
-	   }
-	   
-	   #messageFormContainer {
-	       position: absolute;
-		   bottom: 0;
-	       width: 100%;
-		   min-width: 1200px;
-		   border-top: 1px solid #444;	
-		   z-index: 41;
-	   }
-	   
-	   #messageForm {
-	       position: relative;
-	       background: #233F7E;  
-		   padding: 3px;
-	   }
-	   
-	   #messageInput {
-	       width: 86%;
-		   padding: 10px;
-           margin-right: .5%; 
-		   margin-left: 0.5%;		   
-	   }
-	   
-	   #sendButton {
-	       width: 8%;	   
-	   	   font: bold 12px/18px sans-serif;
-		   display: inline-block;
-		   margin-right: -4px;
-		   position: relative;
-		   padding: 8px 10px;
-		   background: #b3e7f1;
-		   cursor: pointer;	    
-		   border: 0;
-		   border-radius: 5px; 
-		   -moz-border-radius: 5px; 
-		   -webkit-border-radius: 5px;
-		   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-		   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);	 
-	   }
-	   
-	   #sendButton:hover {
-	      background: #a0e1ed;
-	   }
-	   #sendButton:active {
-	      background: #8ddbea;
-	   }	 
-	   
-	   #autoScrollInputContainer {
-	       display: block;
-		   position: absolute;
-		   right: 0.9%;
-		   bottom: 8px;
-	   }
-	   #autoScrollInputLabel {
-		  display: block;
-		  margin: 0 auto;
-		  color: #FFF;
-		  padding-bottom: 2px;
-	   }
-	   #autoScrollInput {
-	        display: block;
-		    margin: 0 auto;
-	   }
-	   
-	   #typingIndicatorContainer {
-	       position: absolute;
-		   width: 280px;
-		   z-index: 40;
-		   right: 20px;
-		   bottom: 45px;
-		   margin-bottom: 0px;
-		   -webkit-margin-after: 1px;
-	   }
-	   
-	   #typingIndicator {
-	       list-style-type: none; 
-		   margin: 0; 
-		   padding: 0; 
-		   display: block;	  
-	   }
-	   
-	   [data-typing]:nth-child(1) {
-	       border-top: 1px solid rgba(59, 86, 148, 0.3);
-	   }
-	   [data-typing] {
-	       border-bottom: 1px solid rgba(59, 86, 148, 0.3);
-		   border-left: 1px solid rgba(59, 86, 148, 0.3);
-		   border-right: 1px solid rgba(59, 86, 148, 0.3);
-	       padding: 1px 1px 1px 10px;
-	       background: #b4bed5;
-		   color: #FFF;
-		   cursor: default;
-		   -webkit-transition: opacity 0.5s;
-		   transition: opacity 0.5s;
-	   }
-	   [data-typing]:hover {
-	       opacity: 0;
-	   }
-	   
-	   #floodControlContainer {
-	       position: absolute;
-		   width: 100%;
-		   z-index: 40;
-		   bottom: 60px;
-		   margin-bottom: 0px;
-		   -webkit-margin-after: 1px;
-		   visibility: hidden;		   
-	   }
-	   
-	   #floodControlBubble {
-		   position: relative;
-		   margin: 0 auto;
-		   width: 500px;
-		   background: rgba(214,50,50, 0.7);
-		   padding: 15px;
-		   border-radius: 10px; 
-		   -moz-border-radius: 10px; 
-		   -webkit-border-radius: 10px;
-		   border: 1px solid rgba(214,50,50, 0.9);
-		   text-align: center;
-	   }
-	   #close {
-			position: absolute;
-			top: -5px;
-			right: 0px;
-			font-size: 120% !important;
-	   }
-	   #floodControlBubble span {
-	       font-size: 140%;
-		   color: #FFF;
-		   padding: 10px;
-	   }
-	   
-		.img{
-	       display: inline;
-		}
-		#portrait {
-			width: 100%;
-			visibility: hidden;
-			z-index: 44;
-			vertical-align: top; 
-			text-align: center; 
-			position: absolute;
-			top: 50%; 
-		}
-		#portrait img {
-		    z-index: 45;
-			/*-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-			-moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-			box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);	*/			
-		}
-	   
-		.videoContainer {
-		    width: 325px;
-			height: 200px;
-			position: relative;
-			margin-left: 1%;
-			z-index: 18;
-		}
-		.msg:hover .resizer {
-		    opacity: 0.2;
-		}
-		.yt {
-		    z-index: 14;
-		}
-		.resizer {
-			z-index: 16;
-		    opacity: 0;
-			border-radius: 10px; 
-		   -moz-border-radius: 10px; 
-		   -webkit-border-radius: 10px;
-		   position: absolute;
-		   top: 0;
-		   right: -40px;
-		   width: 40px;
-		   height: 40px;
-		   /*background: #EEE;*/
-		   text-align: center;
-		    background-image: url("+.png");	
-			cursor: pointer;
-		}
-		.resizer:hover {
-		    opacity: 0.5 !important;
-		}
-/*		
-		.msg:hover .timestamp {
-		    opacity: 0.4 !important;
-		}	*/	
-		.timestamp {
-		    opacity: 0.4;
-			font-size: 90%;
-			-webkit-transition: opacity 0.5s;
-		    transition: opacity 0.5s;			
-			cursor: default;
-			position: absolute;
-			right: 0.5%;
-		}
-
-		
-	</style>
   </head>
   <body>
     <div id="typingIndicatorContainer">
@@ -674,13 +41,13 @@
 	  </div>
 	</div>
     <div id="container">
-	  <div id="shadow"></div> 	
+	  <div id="shadow"></div>
       <div id="header">
 	    <div id="circle"></div>
 		<div id="nameBox">
 		  <label id="connectText" class="noSelect">Connected as</label>
 		  <label id="connectName" class="noSelect">&nbsp;</label>
-		</div>	
+		</div>
 		<ul id="moreUL">
 		  <li id="moreLI" class="noSelect">
 		    More
@@ -698,7 +65,7 @@
 		  </li>
 		</ul>
 	  </div>
-	  
+
 	  <div id="settingsBox">
 	    <div id="settingsContainer">
 		   <div id="settingsHeader">
@@ -709,32 +76,32 @@
 		     <input id="changeNameInput" autofocus autocomplete="off" />
 		   </div>
 		   <div id="colorContainer">
-		   
+
 		     <div id="colorNameChangeContainer" class="colorChangeContainer">
 		       <div id="colorNameSpanInput" class="colorSpanInput">
 			     <span id="colorChangeNameSpan" class="noSelect">Name Color</span>
 			     <span class="hex">#</span><input id="colorChangeNameInput" class="colorChangeInput" maxlength="6" autocomplete="off" />
 			   </div>
 			   <div id="colorNamePreview" class="colorPreview"></div>
-			 </div>  
-			 
+			 </div>
+
 		     <div id="colorTextChangeContainer" class="colorChangeContainer">
 		       <div id="colorTextSpanInput" class="colorSpanInput">
 			     <span id="colorChangeTextSpan" class="noSelect">Text Color</span>
 			     <span class="hex">#</span><input id="colorChangeTextInput" class="colorChangeInput" maxlength="6" autocomplete="off" />
 			   </div>
 			   <div id="colorTextPreview" class="colorPreview"></div>
-			 </div>  
-			 
-		   </div>		  
+			 </div>
+
+		   </div>
            <button id="changeAllSettingsButton" class="regularButton">Apply</button>
 		</div>
-	  </div>	  
-	  
+	  </div>
+
 
 	  <div id="portrait"></div>
-	  
-   
+
+
       <div id="messageFormContainer">
       <form id="messageForm" action="">
         <input id="messageInput" autofocus autocomplete="off" /><button id="sendButton">Send</button>
@@ -742,20 +109,20 @@
 		  <label id="autoScrollInputLabel">Scroll</label>
 		  <input id="autoScrollInput" type="checkbox" checked>
 		</div>
-      </form>	 
+      </form>
 	  </div>
 	</div>
 	<div id="messagesContainer">
       <ul id="messages"></ul>
 	</div>
 
-	
+
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 	<script src="xbbcode.js"></script>
 	<script src="Autolinker.min.js"></script>
 	<script type="text/javascript" language="javascript">
-	    
+
 		var socket = io();
 		var clicks = 0;
 		var darken = false;
@@ -765,24 +132,24 @@
 		var nameColor = "414163";
 		var textColor = "000000";
 		var isTyping = false;
-		
+
 		var unreadMessages = 0;
 		var activeWindow = true;
-	
+
 		var floodControlOn = false;
-	
+
 		var imgDarken = false;
 		var shrunkenImg = false;
 		var isZoomed = false;
 		//var imgSel = null;
-	
+
 		var autolinker = new Autolinker({
 			replaceFn : function(autolinker, match) {
 				if(match.getType() == 'url') {
 					var tempUrl = match.getUrl();
 					var fileEx = tempUrl.substr(tempUrl.lastIndexOf('.')+1);
-						
-					//Auto for image links	
+
+					//Auto for image links
 					if(['jpg','png','gif','bmp','jpeg'].indexOf(fileEx) > -1) {
 						var bStr = XBBCODE.process({
 							text: '[img]'+tempUrl+'[/img]',
@@ -791,44 +158,44 @@
 						});
 						return bStr.html;
 					}
-					else 
+					else
 						return true;
 				}
-			}				
+			}
 		});
-	
+
 		//When you submit a message
 		$('#messageForm').submit(function() {
 		    //console.log(parseInt($('#typingIndicatorContainer').css('margin-bottom')) + 10);
 			if(($('#messageInput').val() != '') && (connected)) {
 			    var guid = getCookie('guid');
-				//var fixedStr = stopScriptInjecting($('#messageInput').val());							
-				
+				//var fixedStr = stopScriptInjecting($('#messageInput').val());
+
 				var bbStr = XBBCODE.process({
 					text: $('#messageInput').val(),
 					removeMisalignedTags: false,
 					addInLineBreaks: false
 				});
-				
-				var embedStr = autoEmbedYouTube(bbStr.html);				
+
+				var embedStr = autoEmbedYouTube(bbStr.html);
 				//var messageStr = linkify(embedStr);
 				var messageStr = autolinker.link(embedStr);
-				
+
 				//var messageStr = linkify(bbStr.html);
-				
-				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>', guid);		
+
+				socket.emit('chat message', '<li class="msg"><label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span></li>', guid);
 				//$('#messages').append($('<li class="msg">').append('<label style="color:#'+nameColor+'">' + name + ':</label><span style="color:#'+textColor+'">' + messageStr + '</span>'));
 				$('#messageInput').val('');
 				if($('#autoScrollInput').prop('checked'))
-				    messagesContainer.scrollTop = messagesContainer.scrollHeight;		    
+				    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 				socket.emit('is typing', "no", guid);
 			}
 			return false;
-		}); 
-/*	
+		});
+/*
 		function linkify(str) {
 		    var reg = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi
-			
+
 			return str.replace(reg, function(url) {
 				if(url.substring(0,4) == 'http')
 			        return '<a href="' + url + '" target="_blank">' + url + '</a>';
@@ -836,23 +203,23 @@
 				    return '<a href="http://' + url + '" target="_blank">' + url + '</a>';
 			});
 		}
-		
+
 		function stopScriptInjecting(str) {
 			return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 		}
-*/	
+*/
 		function autoEmbedYouTube(str) {
 		    var reg = /(https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?‌​=]*)?/;
 			var match = str.match(reg);
 
-			if(match && match[2].length == 11) {			
+			if(match && match[2].length == 11) {
 				return str.replace(reg, function(url) {
 				    return '//www.youtube.com/embed/' + match[2];
 				});
 			}
 			else
 			    return str;
-		}	
+		}
 
 		//For adjusting the height and width of a video player
 		$(document).on('mouseup', '.videoContainer', function(event) {
@@ -864,75 +231,75 @@
 					$(this).css('height', '345px');
 					$(res).siblings('.yt').css('width', '560px');
 					$(res).siblings('.yt').css('height', '345px');
-					$(res).css('background-image', 'url("-.png")');				
-					$(res).data('zoom', '-');				
+					$(res).css('background-image', 'url("-.png")');
+					$(res).data('zoom', '-');
 				}
-				else {	//Shrink 
+				else {	//Shrink
 					$(this).css('width', '325px');
 					$(this).css('height', '200px');
 					$(res).siblings('.yt').css('width', '325px');
 					$(res).siblings('.yt').css('height', '200px');
-					$(res).css('background-image', 'url("+.png")');	
-					$(res).data('zoom', '+');				
+					$(res).css('background-image', 'url("+.png")');
+					$(res).data('zoom', '+');
 				}
 			}
 		});
-	
+
 		//Close the flood control message (called from either a click or 4s delay from visible)
 		function closeFloodBubble() {
 			if(floodControlOn) {
 				floodControlOn = false;
-				$('#floodControlBubble').addClass('animated fadeOutDown');	
-				$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+				$('#floodControlBubble').addClass('animated fadeOutDown');
+				$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
 					$('#floodControlBubble').removeClass();
 					$('#floodControlContainer').css('visibility', 'hidden');
-				});		
+				});
 			}
-		}	
+		}
 		//Close the flood control message when you click it
 		$('#floodControlBubble').click(function() {
 			closeFloodBubble();
-			
-		});		
-	
+
+		});
+
 	    //Toggle the dropdown menu to display the online users/settings button
 	    $('#moreLI').click(function() {
 	        $('#dropDown').toggle();
 	    });
-	  
+
 	    //Open the settings box
-	    $('#settingsButton').click(function() {    
-   	        $('#shadow').toggle();  
-            $('#settingsBox').toggle();	
-			$('#changeNameInput').focus();	 
+	    $('#settingsButton').click(function() {
+   	        $('#shadow').toggle();
+            $('#settingsBox').toggle();
+			$('#changeNameInput').focus();
 			$('#changeNameInput').val(name);
 			$('#colorChangeNameInput').val(nameColor);
 			$('#colorNamePreview').css('background', '#' + nameColor);
 			$('#colorChangeTextInput').val(textColor);
-			$('#colorTextPreview').css('background', '#' + textColor);			
+			$('#colorTextPreview').css('background', '#' + textColor);
 			clicks = 0;
 			darken = true;
 		});
-	  
+
 	    //Perform the steps to fully change your name if you changed it
 	    function changeName() {
 			var tempName = $('#changeNameInput').val();
 			if(tempName != "") {
 			    name = tempName;
-				setCookie("name", name, 1);				
+				setCookie("name", name, 1);
 				if(connected) {
 					var guid = getCookie('guid');
-				    $('#connectName').text(name);								  
+				    $('#connectName').text(name);
 				    socket.emit('new display name', name, guid);
 				}
 			}
 		}
-		
+
 		//Check to see if it's a hex color
 		function isHexColor(color) {
 		   return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
 		}
-		
+
 		//Perform the steps to fully change a color if you changed it
 		function changeColor(choice){
 			var tempColor;
@@ -940,7 +307,7 @@
 		        tempColor = $('#colorChangeNameInput').val();
 		    else
 			    tempColor = $('#colorChangeTextInput').val();
-				
+
 			if(isHexColor("#" + tempColor)) {
 			    if(choice == "Name") {
 				    nameColor = tempColor;
@@ -953,7 +320,7 @@
 				}
 			}
 		}
-	 
+
 	    //Dynamically change the preview for the name color as you type valid hex colors
 		$('#colorChangeNameInput').on('input', function() {
 		    if(isHexColor("#" + $(this).val()))
@@ -963,20 +330,20 @@
 		$('#colorChangeTextInput').on('input', function() {
 		    if(isHexColor("#" + $(this).val()))
 			    $('#colorTextPreview').css('background', '#' + $(this).val());
-		});		
-	  
+		});
+
 	    //When you change some settings and click Apply
 		$('#changeAllSettingsButton').click(function() {
 			changeName();
 			changeColor("Name");
 			changeColor("Text");
-			$('#shadow').toggle();  
+			$('#shadow').toggle();
 			$('#settingsBox').toggle();
-			$('#messageInput').focus();	 
-			darken = false;		  
-			
+			$('#messageInput').focus();
+			darken = false;
+
 		});
-		
+
 		//Allows you to press enter on the change name box and it will click Apply
 		$('#changeNameInput').keypress(function(e) {
 			if(e.which == 13)
@@ -991,24 +358,24 @@
 		$('#colorChangeTextInput').keypress(function(e) {
 			if(e.which == 13)
 				$('#changeAllSettingsButton').click();
-		});		
-	  
+		});
+
 		function endImageAnimation() {
-			$('#portrait').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {	
-			    $('#portrait').removeClass('animated fadeOut');			
+			$('#portrait').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
+			    $('#portrait').removeClass('animated fadeOut');
 				$('#portrait').css('visibility', 'hidden');
-			});		    
+			});
 		}
-	  
+
 	    //Remove the shadow when you click anywhere besides the settingsBox/click anywhere when portrait is up
 	    $(document).on('click', function(event) {
 			if(!$(event.target).closest('#settingsBox').length) {
 				clicks++;
 				if((clicks > 1) && (darken == true)) {
-					$('#shadow').toggle();  
+					$('#shadow').toggle();
 					$('#settingsBox').toggle();
-					$('#messageInput').focus();	 
-					darken = false;	
+					$('#messageInput').focus();
+					darken = false;
 					clicks = 0;
 				}
 			}
@@ -1028,7 +395,7 @@
 							//$('#portrait').toggle();
 							$('#messageInput').focus();
 							clicks = 0;
-							imgDarken = false;					
+							imgDarken = false;
 						}
 					}
 				}
@@ -1040,19 +407,19 @@
 						if(clicks > 2) {
 							//$('#portrait').addClass('animated fadeOut');
 							//endImageAnimation();
-							
+
 							//Remove excess scrollbars if you closed it when it was zoomed in
 							if(isZoomed) {
-								$('#portrait img').css('max-height', $(window).height()-10+'px');   //94%   //90%	 83%			
-								$('#portrait img').css('max-width', $(window).width()-10+'px');	
+								$('#portrait img').css('max-height', $(window).height()-10+'px');   //94%   //90%	 83%
+								$('#portrait img').css('max-width', $(window).width()-10+'px');
 								height = $('#portrait img')[0].clientHeight;
-								$('#portrait').css('margin-top', '-'+(height/2)+'px');						    
+								$('#portrait').css('margin-top', '-'+(height/2)+'px');
 							}
 							$('#shadow').toggle();
 							$('#portrait').css('visibility', 'hidden');
 							//$('#portrait').toggle();
 							$('#messageInput').focus();
-							imgDarken = false;	
+							imgDarken = false;
 							clicks = 0;
 							shrunkenImg = false;
 						}
@@ -1062,8 +429,8 @@
 						var height;
 						//Zoom back out
 						if(isZoomed) {
-							$('#portrait img').css('max-height', $(window).height()-20+'px');   //94%   //90%	 83%			
-							$('#portrait img').css('max-width', $(window).width()-20+'px');	
+							$('#portrait img').css('max-height', $(window).height()-20+'px');   //94%   //90%	 83%
+							$('#portrait img').css('max-width', $(window).width()-20+'px');
 							height = $('#portrait img')[0].clientHeight;
 							$('#portrait').css('margin-top', '-'+(height/2)+'px');
 							isZoomed = false;
@@ -1071,17 +438,17 @@
 						}
 						//Zoom to natural size
 						else {
-							$('#portrait img').css('max-height', ''); 
-							$('#portrait img').css('max-width', '');		
-							height = $('#portrait img')[0].naturalHeight;	
+							$('#portrait img').css('max-height', '');
+							$('#portrait img').css('max-width', '');
+							height = $('#portrait img')[0].naturalHeight;
 							isZoomed = true;
 							$('#portrait img').css('cursor', 'zoom-out');
 						}
 					}
 				}
-			} 
+			}
 		});
-		
+
 		//For when a user is typing text/deleted all text (fire off typing identifier)
 		$('#messageInput').on('input', function() {
 			if(connected) {
@@ -1091,58 +458,58 @@
 						isTyping = true;
 						socket.emit('is typing', "yes", guid);
 					}
-				}   
+				}
 				else {
 					isTyping = false;
 					socket.emit('is typing', "no", guid);
 				}
 			}
 		});
-		
+
 		//Display the clicked image in its full size
 		$(document).on('click', '.img', function() {
-			$('#portrait').empty();		
-			$('#portrait').append(($(this).children('img').eq(0)).clone());		
+			$('#portrait').empty();
+			$('#portrait').append(($(this).children('img').eq(0)).clone());
 			$('#portrait img').removeAttr('style');
-			var height = $('#portrait img')[0].naturalHeight;		
-			var width = $('#portrait img')[0].naturalWidth;	
+			var height = $('#portrait img')[0].naturalHeight;
+			var width = $('#portrait img')[0].naturalWidth;
 			$('#shadow').toggle();
 			$('#portrait').css('visibility', 'visible');
-			
-			$('#portrait img').css('max-height', $(window).height()-20+'px');   //94%   //90%	 83%			
-			$('#portrait img').css('max-width', $(window).width()-20+'px');			
-			//imgSel = this;			
+
+			$('#portrait img').css('max-height', $(window).height()-20+'px');   //94%   //90%	 83%
+			$('#portrait img').css('max-width', $(window).width()-20+'px');
+			//imgSel = this;
 			//$(this).css('opacity', '0.1');
 			var height2 = $('#portrait img')[0].clientHeight;
-			var width2 = $('#portrait img')[0].clientWidth;			
+			var width2 = $('#portrait img')[0].clientWidth;
 
 			$('#portrait').addClass('animated fadeIn');
-			//$('#portrait').toggle();	
+			//$('#portrait').toggle();
 
-			
+
 			//If it's too big for the screen, still shrink it
-			if((height > height2) || (width > width2)) {			
+			if((height > height2) || (width > width2)) {
 			    $('#portrait').css('margin-top', '-'+(height2/2)+'px');
 				shrunkenImg = true;
 				$('#portrait img').css('cursor', 'zoom-in');
 			}
 			else
 			    $('#portrait').css('margin-top', '-'+(height/2)+'px');
-			
+
 		    imgDarken = true;
-			clicks = 0;		
-			
-			$('#portrait').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {	
+			clicks = 0;
+
+			$('#portrait').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
 			     $('#portrait').removeClass('animated fadeIn');
 			});
-			
+
 		});
-		
+
 		//Get the values for the name and text colors from cookies
 		function getColors() {
 		    var tempNameCol = getCookie("nameColor");
 			var tempTextCol = getCookie("textColor");
-			
+
 			if(tempNameCol != "")
 			    nameColor = tempNameCol;
 			if(tempTextCol != "") {
@@ -1150,9 +517,9 @@
 				$('#messageInput').css('color', '#'+textColor);
 			}
 		}
-				
+
 		//On page ready, set up name variable and connected users
-		$( document ).ready(function() {		
+		$( document ).ready(function() {
 			var guid = getCookie('guid');
 			console.log(guid);
 			if(guid == '') {
@@ -1164,41 +531,41 @@
 			$('#connectName').text('____');
 			getColors();
 		});
-	  
+
 		function setGUID() {
 		    function s4() {
 				return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
 			}
-			
+
 			var id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 			return id;
 		}
-	  
+
 	  	//Handle the events needed for when you make connection with the server
 		function connectionStart() {
 		    $('#circle').css('background', '#00e500');
-			$('#circle').css('border', '2px solid #00b200');			
+			$('#circle').css('border', '2px solid #00b200');
 			//Glow
 			$('#circle').css('-webkit-box-shadow', '0 0 7px #0F0');
 			$('#circle').css('-moz-box-shadow', '0 0 7px #0F0');
 			$('#circle').css('box-shadow', '0 0 7px #0F0');
-			
+
 		    $('#connectText').text('Connected as');
-			var tempName = getCookie("name");	
-			
+			var tempName = getCookie("name");
+
 			var guid = getCookie('guid');
-			
+
 			if(tempName != "") {
-				name = tempName;			
-				socket.emit('have display name', name, guid);					
-				$('#connectName').text(name);		
+				name = tempName;
+				socket.emit('have display name', name, guid);
+				$('#connectName').text(name);
 				socket.emit('need all connections', "pls");
 				socket.emit('need last messages', 'pls');
-			}	 
+			}
 			else
 				socket.emit('need guest name', guid);
 		}
-		
+
 		//Handle the events for if the server goes down
 		function serverDisconnect() {
 		    $('#circle').css('background', '#E60000');
@@ -1207,13 +574,13 @@
 			$('#circle').css('-webkit-box-shadow', '0 0 7px #F00');
 			$('#circle').css('-moz-box-shadow', '0 0 7px #F00');
 			$('#circle').css('box-shadow', '0 0 7px #F00');
-			
+
 		    $('#connectText').text('Not connected');
-			$('#connectName').text('____');		
+			$('#connectName').text('____');
 			$('#typingIndicator').empty();
 			$('#onlineUsers').empty();
 		}
-		
+
 		//Remove a specific [user] is typing li
 		function removeIndividualTypingIndicator(user) {
 		   	$('#typingIndicator li').each(function(index) {
@@ -1222,32 +589,32 @@
 				}
 			});
 		}
-		
-		function fadeUnreadMessageBorders() {		    
-		    //jQuery.fn.reverse = [].reverse;	
-			
+
+		function fadeUnreadMessageBorders() {
+		    //jQuery.fn.reverse = [].reverse;
+
 		    //$('.unread').reverse().each(function(i) {
 			//	//console.log($(this).text());
 			//    $(this).css('border-left-color', 'transparent');
 			//});
-			
+
 			//for(var i=0; i<
 			var unreadMsgArray = $('.unread');
 			var iterations = unreadMsgArray.length;
-			
+
 			if(iterations > 0) {
 				function fade(i) {
 					setTimeout(function(){
 						$(unreadMsgArray[i]).css('border-left-color', 'transparent');
 						i++;
-						if(i<iterations) 
+						if(i<iterations)
 							fade(i);
 					}, 250);
 				}
 				fade(0);
 			}
 		}
-		
+
 		//Check if the window is active or not
 		window.onfocus = function() {
 			activeWindow = true;
@@ -1260,7 +627,7 @@
 
 
 		//Add the correct HTML to the timestamp
-		var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Aug', 'Oct', 'Nov', 'Dec'];		
+		var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Aug', 'Oct', 'Nov', 'Dec'];
 		function setTimestamp(timestampEle) {
 		    var date = new Date($(timestampEle).data('time'));
 			var day = date.getDate();
@@ -1270,26 +637,26 @@
 			var hour = date.getHours();
 			var min = date.getMinutes();
 			var amPM = "AM";
-			
+
 			if(hour >= 12) {
 			    hour -= 12;
 				amPM = "PM";
-			}	
+			}
 			if(hour == 0)
-			    hour = 12;			
+			    hour = 12;
 			if(min < 10)
 			   min = '0'+min;
-			
-			$(timestampEle).html('&nbsp;&nbsp;&nbsp;&nbsp;<span class="yest">Yesterday&nbsp;</span><span class="month">' + month + 
-								 '&nbsp;</span><span class="day">' + day + '</span><span class="year">,&nbsp;' + year + 
-								 '&nbsp;</span><span class="hour">' + hour + ':</span><span class="min">' + min + 
+
+			$(timestampEle).html('&nbsp;&nbsp;&nbsp;&nbsp;<span class="yest">Yesterday&nbsp;</span><span class="month">' + month +
+								 '&nbsp;</span><span class="day">' + day + '</span><span class="year">,&nbsp;' + year +
+								 '&nbsp;</span><span class="hour">' + hour + ':</span><span class="min">' + min +
 								 '&nbsp;</span><span class="amPM">' + amPM + '</span>');
 		}
-		
+
 		//Toggle the correct elements in the timestamp
 		function formatTimestamp(timestampEle) {
 			var now = new Date();
-			
+
 		    var date = new Date($(timestampEle).data('time'));
 			var day = date.getDate();
 			var monthI = date.getMonth();
@@ -1297,7 +664,7 @@
 			var year = date.getFullYear();
 			//var hours = date.getHours();
 			//var mins = date.getMinutes();
-			
+
 			//Check if it's the same year
 			if(year == now.getFullYear()) {
 				$(timestampEle).find('.year').hide();
@@ -1313,19 +680,19 @@
 					else if(day+1 == now.getDate()) {
 						$(timestampEle).find('.month').hide();
 						$(timestampEle).find('.day').hide();
-						$(timestampEle).find('.yest').show();					
+						$(timestampEle).find('.yest').show();
 					}
 					else {
 						$(timestampEle).find('.month').show();
 						$(timestampEle).find('.day').show();
-						$(timestampEle).find('.yest').hide();				
+						$(timestampEle).find('.yest').hide();
 					}
 				}
 				else {
 					$(timestampEle).find('.month').show();
 					$(timestampEle).find('.day').show();
-					$(timestampEle).find('.yest').hide();				    
-				}			    
+					$(timestampEle).find('.yest').hide();
+				}
 			}
 			else {
 			    $(timestampEle).find('.year').show();
@@ -1334,14 +701,14 @@
 				$(timestampEle).find('.yest').hide();
 			}
 		}
-		
+
 		//Fade the timestamp after a length of time
 		function fadeTimestamp(timestampEle, length) {
 		    setTimeout(function(ele) {
 			    $(ele).css('opacity', '0');
 			}, length, timestampEle);
 		}
-		
+
 		$(document).on('mouseenter', '.msg', function() {
 		    formatTimestamp($(this).find('.timestamp'));
 		    $(this).find('.timestamp').css('opacity', '0.4');
@@ -1349,52 +716,52 @@
 		$(document).on('mouseleave', '.msg', function() {
 		    $(this).find('.timestamp').css('opacity', '0');
 		});
-		
+
 		//------------Handle all socket identifiers ---------------------------------------------------
 		//For handling the startup of a connection to the server
 		socket.on('connect', function() {
 		   connected = true;
 		   connectionStart();
 		});
-		
+
 		//For handling the server disconnecting
 		socket.on('disconnect', function() {
-			connected = false;		
+			connected = false;
 			serverDisconnect();
 		});
-		
+
 		//For gathering chat messages and displaying them
-		socket.on('chat message', function(msg) {		
-			$('#messages').append(msg);					
+		socket.on('chat message', function(msg) {
+			$('#messages').append(msg);
 			setTimestamp($('.msg').last().find('.timestamp'));
 			formatTimestamp($('.msg').last().find('.timestamp'));
-			
+
 			if($('#autoScrollInput').prop('checked'))
 			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-			
-			//Notifications in the title			
+
+			//Notifications in the title
 			if(!activeWindow) {
-				document.title = '[' + ++unreadMessages + '] Chat';		
-				//$('#messages li:last-child').addClass('unread');      ///////////////////////ANIMATION 
+				document.title = '[' + ++unreadMessages + '] Chat';
+				//$('#messages li:last-child').addClass('unread');      ///////////////////////ANIMATION
 			}
-			
+
 			fadeTimestamp($('.msg').last().find('.timestamp'), 20000);			//////////////////////////////////////FADE
-		});	
-	  
+		});
+
 		//For telling the user you're send messages too fast
 		socket.on('dropped message', function(msg) {
 			floodControlOn = true;
-			$('#floodControlContainer').css('visibility', 'visible');			
-			$('#floodControlBubble').addClass('animated fadeInUp');			
-			
-			$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+			$('#floodControlContainer').css('visibility', 'visible');
+			$('#floodControlBubble').addClass('animated fadeInUp');
+
+			$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
 		        $('#floodControlBubble').removeClass();
 			    $('#floodControlContainer').css('visibility', 'visible');
 				setTimeout(closeFloodBubble, 4000);
 		    });
 
 		});
-		
+
 		//For setting your name as a guest with a unique number (you haven't configured a name yet)
 		socket.on('guest name', function(gName) {
 			name = gName;
@@ -1403,7 +770,7 @@
 			socket.emit('need all connections', "pls");
 			socket.emit('need last messages', 'pls');
 		});
-	  
+
 		//For getting newly connected users and appending their name to the online users list
 		socket.on('connected user', function(name) {
 			$('#onlineUsers').append($('<li>').text(name));
@@ -1411,7 +778,7 @@
 			if($('#autoScrollInput').prop('checked'))
 			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});
-	  
+
 		//For getting all the connected users at once to append to the online users list
 		socket.on('all connections', function(names) {
 			$('#onlineUsers').empty();
@@ -1419,7 +786,7 @@
 				$('#onlineUsers').append($('<li>').text(names[i].Name));
 			}
 		});
-	  
+
 	    //For displaying to the chat when a user disconnects
 		socket.on('disconnected user', function(user) {
 			removeIndividualTypingIndicator(user);
@@ -1427,23 +794,23 @@
 			if($('#autoScrollInput').prop('checked'))
 			    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});
-		
+
 		//For displaying to the chat when a user is typing
 		socket.on('typing', function(user) {
 		    $('#typingIndicator').append('<li class="noSelect" data-typing="yes" data-name="'+user.Name+'" data-id="'+user.ID+'">' + user.Name + ' is typing</li>');
 		});
-		
-		//For removing '[user] is typing' li 
+
+		//For removing '[user] is typing' li
 		socket.on('not typing', function(user) {
 		    removeIndividualTypingIndicator(user);
 		});
-		
+
 		//For if you change names in one active chat tab/window and you need to update the other(s)
 		socket.on('you changed names', function(tempName) {
 			name = tempName;
 		    $('#connectName').text(name);
 		});
-		
+
 		//For displaying the last messages that are stored on the server
 		socket.on('last messages', function(lastMessages, index, size) {
 			var i;
@@ -1451,28 +818,28 @@
 			    i=index;
 			else
 			    i=0;
-				
+
 		    for(var j=0; j<lastMessages.length; j++) {
-			    $('#messages').append(lastMessages[i]);	 
+			    $('#messages').append(lastMessages[i]);
 				setTimestamp($('.msg').last().find('.timestamp'));
 				formatTimestamp($('.msg').last().find('.timestamp'));
 				fadeTimestamp($('.msg').last().find('.timestamp'), 8000);			//////////////////////////////////////FADE
 				i=(i+1)%size
 			}
-				
+
 			if($('#autoScrollInput').prop('checked'))
-				messagesContainer.scrollTop = messagesContainer.scrollHeight;	
+				messagesContainer.scrollTop = messagesContainer.scrollHeight;
 		});
 		//---------------------------------------------------------------------------------------------
-		
+
 		//Functions for cookies for storing your name  ------------------------------------------------
 		function setCookie(cname, cvalue, exdays) {
 			var d = new Date();
 			d.setTime(d.getTime() + (exdays*24*60*60*1000));
 			var expires = "expires="+d.toUTCString();
 			document.cookie = cname + "=" + cvalue + "; " + expires;
-		} 
-	  
+		}
+
 		function getCookie(cname) {
 			var tname = cname + "=";
 			var ca = document.cookie.split(';');
@@ -1483,7 +850,7 @@
 			}
 			return "";
 		}
-		//---------------------------------------------------------------------------------------------	  
+		//---------------------------------------------------------------------------------------------
 	</script>
   </body>
 </html>
