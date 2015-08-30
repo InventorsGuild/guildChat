@@ -224,7 +224,7 @@ var XBBCODE = (function() {
                     myUrl = "";
                 }
 
-                return '<div><div class="img"><img src="' + myUrl + '" style="max-height:150px; margin-left:1%; border-radius:20px; -moz-border-radius:20px; -webkit-border-radius:20px;" /></div></div>';
+                return '<div class="img"><img src="' + myUrl + '" style="max-height:150px; max-width:325px; border-radius:20px; -moz-border-radius:20px; -webkit-border-radius:20px;" /></div>';
             },
             closeTag: function(params,content) {
                 return '';
@@ -240,7 +240,7 @@ var XBBCODE = (function() {
 					myUrl = ""; 
 				} 
 				
-				return '<div class="videoContainer"><div class="resizer" data-zoom="+"></div><iframe class="yt" type="text/html" width="325" height="200" src="' + myUrl + '?wmode=opaque" frameborder="0" allowfullscreen></iframe></div>'; 
+				return '<div class="videoContainer"><iframe class="yt" type="text/html" width="325" height="200" src="' + myUrl + '?wmode=opaque" frameborder="0" allowfullscreen></iframe><div class="resizer" data-zoom="+"></div></div>'; 
 			}, 
 			closeTag: function(params,content) { 
 				return ''; 

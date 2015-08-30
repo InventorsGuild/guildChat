@@ -1,0 +1,966 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"> 
+	<link rel="stylesheet" href="animate.min.css">
+	<link rel="stylesheet" type="text/css" href="xbbcode.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+    <title>Chat</title>
+  </head>
+	 
+  <body>  
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <span class="navbar-brand noselect"><span id="connectName">Name</span></span>
+		  <ul class="nav navbar-nav navbar-left">
+		    <li id="back-li" class="hide"><a href="#" onclick="goBack()" class="nooutline"><span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>&nbsp;Back</a></li>
+		  </ul>		  
+        </div>
+		
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+		    <li id="settings-li"><a href="#" onclick="openCloseSettings()" class="nooutline">Settings</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users Online <span class="caret"></span></a>
+              <ul id="onlineUsers" class="dropdown-menu scrollable-menu">
+                <li><a id="none" href="#">None</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+	
+	<div id="cover" class="container">
+	   <!-- Begin Settings -->
+		<div id="settings" class="jumbotron collapse">
+		  <div class="row center">
+		    <div id="name-container">
+		      <label>Display Name </label>
+		      <input type="text" id="changeNameInput" class="col-xs-10 form-control" autocomplete="off">
+			</div>
+		  </div>
+		  <div class="center">
+<!--			<div class="col-xs-2 col-sm-3 col-md-4"></div> -->
+		    <form id="nameColorForm" class="form color-form">  <!-- 4 3 2 -->
+		      <label>Name Color</label>
+		      <div class="form-group">
+			    <div class="col-xs-2"></div>
+			    <div class="input-group col-xs-8">
+			      <div class="input-group-addon">#</div>
+			      <input type="text" id="colorChangeNameInput" class="form-control colorChangeInput" maxlength="6" autocomplete="off">
+				  <div id="colorNamePreview" class="input-group-addon"></div>
+		        </div>
+				<div class="col-xs-2"></div>
+			  </div>
+		    </form>
+
+			<form id="textColorForm" class="form color-form">  <!-- 4 3 2 -->
+		      <label>Text Color</label>
+		      <div class="form-group">
+			    <div class="col-xs-2"></div>
+			    <div class="input-group col-xs-8">
+			      <div class="input-group-addon">#</div>
+			      <input type="text" id="colorChangeTextInput" class="form-control colorChangeInput" maxlength="6" autocomplete="off">
+				  <div id="colorTextPreview" class="input-group-addon"></div>
+		        </div>
+				<div class="col-xs-2"></div>
+			  </div>
+			 
+		  </div>
+		  
+		  <div class="row center">		 
+			<label id="settings-scroll-text">AutoScroll Text</label>
+		    <div class="switch check">		  
+              <input id="autoScrollInput" type="checkbox" checked>
+              <label><i></i></label>
+            </div>
+		  </div>
+		  
+		  <button type="button" id="changeSettingsButton" class="btn btn-success btn-lg">Apply</button>
+		  
+		</div>	  
+	    <!-- End Settings -->
+		
+		<div id="portrait" class="collapse"><span class="img-helper"></span><img class="img-responsive" src="" /></div>
+	</div>	
+	
+    <div class="container full scrolling">
+<!--		<div id="settings" class="jumbotron hide">
+		  <h2>Settings</h2>
+		  <div class="row center">
+		    <div id="name-container">
+		      <label>Display Name </label>
+		      <input type="text" id="changeNameInput" class="col-xs-10 form-control" autocomplete="off">
+			</div>
+		  </div>
+		  <div class="row center">
+
+		    <form class="form color-form">
+		      <label>Name Color</label>
+		      <div class="form-group">
+			    <div class="input-group">
+			      <div class="input-group-addon">#</div>
+			      <input type="text" id="colorChangeNameInput" class="form-control colorChangeInput" maxlength="6" autocomplete="off">
+				  <div id="colorNamePreview" class="input-group-addon"></div>
+		        </div>
+			  </div>
+		    </form>
+
+			<form class="form color-form">
+		      <label>Text Color</label>
+		      <div class="form-group">
+			    <div class="input-group">
+			      <div class="input-group-addon">#</div>
+			      <input type="text" id="colorChangeTextInput" class="form-control colorChangeInput" maxlength="6" autocomplete="off">
+				  <div id="colorTextPreview" class="input-group-addon"></div>
+		        </div>
+			  </div>
+		  </div>
+		  
+		  <button type="button" id="changeSettingsButton" class="btn btn-success">Apply</button>
+		  
+		</div>   
+	    <div class="shadow hide"></div> -->
+	    <table id="messages" class="table table-striped">
+		  <tfoot>
+		  </tfoot>
+		  <tbody>	
+		  </tbody>
+	    </table>
+    </div>	
+	
+	<div id="flood-control" class="container">
+	  <div class="alert alert-danger" role="alert">
+	    <strong>Oh no! </strong>
+		You're sending messages too fast. Check your privilege
+	  </div>
+	</div>
+	
+	<footer class="footer">
+	  <div class="container">
+		<div id="footer-row" class="row">
+		  <div class="col-xs-12 col-sm-12 col-md-12">
+		    <div class="row">
+			  <div class="col-xs-8 col-sm-10 col-md-11">   <!-- 8 9 10  with scroll display:none: 9 9 10 -->
+                <input type="text" class="form-control input-lg" id="messageInput" autofocus autocomplete="off">
+			  </div>
+			  <div class="col-xs-2 col-sm-2 col-md-1">    <!-- 3 2 1   with scroll display:none: 2 2 1 -->
+		        <button id="sendButton" class="btn btn-danger btn-lg" >Send</button>	
+			  </div>
+<!--			  <div id="check-col" class="col-xs-1 col sm-1 col-md-1">
+		        <label id="scroll-text" class="checkbox">
+		          <input id="autoScrollInput" type="checkbox" checked>Scroll 
+		        </label>	
+			  </div>  -->
+			</div>			
+		  </div>
+		</div>	
+	  </div>
+    </footer>
+	
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="xbbcode.js"></script>
+  <script src="Autolinker.min.js"></script>
+  <script type="text/javascript" language="javascript">	
+	var socket = io();
+	var scrollContainer = document.getElementsByClassName('scrolling');
+	var settingsOpen = false;
+	var portraitOpen = false;
+	
+	var name = "";
+	var nameColor = "333333";    ///414163
+	var textColor = "000000";
+	
+	var connected = false;
+	var isTyping = false;
+		
+	var unreadMessages = 0;
+	var activeWindow = true;
+	var floodControlOn = false;
+
+	//var imgDarken = false;
+	//var shrunkenImg = false;
+	//var isZoomed = false;
+
+	var numUsers = 0;
+	var numTyping = 0;
+	var interval;  //For typing animation
+	
+/*	
+	var lastY;
+	$(document).bind("touchmove", function(e){
+		e.preventDefault();
+	});
+	$('#messages').on('touchmove', function (e) {
+	    var currentY = e.originalEvent.touches[0].clientY;
+		
+		if(currentY > lastY) {
+			if(scrollContainer[0].scrollTop != scrollContainer[0].scrollHeight)
+			   e.stopPropagation();			
+        } 
+		else if(currentY < lastY) {
+            if(scrollContainer[0].scrollTop != 0)
+			    e.stopPropagation();
+        }
+        lastY = currentY;
+		
+	    //if((scrollContainer[0].scrollTop != scrollContainer[0].scrollHeight) && (scrollContainer[0].scrollTop != 0))
+        //    e.stopPropagation();
+	});
+	
+*/
+/*
+	var ts;
+	$('#messages').bind('touchstart', function (e){
+	   ts = e.originalEvent.touches[0].clientY;
+	});
+
+	$('#messages').bind('touchend', function (e) {
+	   var te = e.originalEvent.changedTouches[0].clientY;
+	   if(ts > te+5) {
+		  if(scrollContainer[0].scrollTop == scrollContainer[0].scrollHeight)
+		     e.preventDefault();
+	   }
+	   else if(ts < te-5) {
+		  if(scrollContainer[0].scrollTop == 0)
+		     e.preventDefault();
+	   }
+	});	
+	
+	$('.dropdown').on('touchmove', function (e) {
+        e.stopPropagation();
+	});
+*/	
+	//Disable page scrolling but allow for scrollable items (DOESNT QUITE WORK HOW I WANT)
+	this.$('.dropdown').on('touchmove', function(event){
+	  event.stopImmediatePropagation()
+	})
+	this.$('#messages').on('touchmove', function(event){
+	  event.stopImmediatePropagation()
+	})
+	this.$('.img-responsive').on('touchmove', function(event){
+	  event.stopImmediatePropagation()
+	})
+	document.ontouchmove = function(e){ e.preventDefault(); }
+	
+	//------------------------------------------------------------------------------
+	// BEGIN MESSAGE INPUT
+	//--------------------------------------------------------------
+	var autolinker = new Autolinker({
+		replaceFn : function(autolinker, match) {
+			if(match.getType() == 'url') {
+				var tempUrl = match.getUrl();
+				var fileEx = tempUrl.substr(tempUrl.lastIndexOf('.')+1);
+					
+				//Auto for image links	
+				if(['jpg','png','gif','bmp','jpeg'].indexOf(fileEx) > -1) {
+					var bStr = XBBCODE.process({
+						text: '[img]'+tempUrl+'[/img]',
+						removeMisalignedTags: false,
+						addInLineBreaks: false
+					});
+					return bStr.html;
+				}
+				else 
+					return true;
+			}
+		}				
+	});
+
+	function autoEmbedYouTube(str) {
+		var reg = /(https?:\/\/)?(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?[\w\?‌​=]*)?/;
+		var match = str.match(reg);
+
+		if(match && match[2].length == 11) {			
+			return str.replace(reg, function(url) {
+				return '//www.youtube.com/embed/' + match[2];
+			});
+			
+		}
+		else
+			return str;
+	}	
+	
+	//Allows you to press enter on the message input and it will click send
+	//$('#messageInput').keypress(function(e) {
+	//	if(e.which == 13) {
+	//		$('#sendButton').click();
+	//		$('#messageInput').focus();
+	//	}
+	//});
+	
+	//When you submit a message
+	$('#sendButton').click(function() {
+		if(($('#messageInput').val() != '') && (connected)) {
+			var guid = getCookie('guid');						
+			
+			var bbStr = XBBCODE.process({
+				text: $('#messageInput').val(),
+				removeMisalignedTags: false,
+				addInLineBreaks: false
+			});
+			
+			var embedStr = autoEmbedYouTube(bbStr.html);				
+			var messageStr = autolinker.link(embedStr);
+			
+			//socket.emit('chat message', '<tr><td class="name" style="color:#'+nameColor+'">' + name + '</td><td class="msg" style="color:#'+textColor+'">' + messageStr + '</td><td class="ts"></td></tr>', guid);	
+			socket.emit('chat message', '<tr><td class="name wrapword" style="color:#'+nameColor+'">' + name + '</td><td class="msg wrapword" style="color:#'+textColor+'">' + messageStr + '</td>', guid);			
+			$('#messageInput').val('');
+			if($('#autoScrollInput').prop('checked'))
+				scrollContainer[0].scrollTop = scrollContainer[0].scrollHeight;		    
+			socket.emit('is typing', "no", guid);
+			$('#messageInput').focus();
+			isTyping = false
+		}
+		return false;	
+	});
+	
+	//For when a user is typing text/deleted all text (fire off typing identifier)
+	$('#messageInput').on('input', function() {
+		if(connected) {
+			var guid = getCookie('guid');
+			if($(this).val().length > 0) {
+				if(!isTyping) {
+					isTyping = true;
+					socket.emit('is typing', "yes", guid);
+				}
+			}   
+			else {
+				isTyping = false;
+				socket.emit('is typing', "no", guid);
+			}
+		}
+	});
+	//--------------------------------------------------------------
+	// END MESSAGE INPUT
+	//------------------------------------------------------------------------------
+	
+	
+	//For adjusting the height and width of a video player
+	$(document).on('click', '.resizer', function(event) {
+		//Enlarge
+		if($(this).data('zoom') == '+') {
+			$(this).css('margin-bottom', '305px');
+			$(this).siblings('.yt').css('width', '560px');
+			$(this).siblings('.yt').css('height', '345px');
+			$(this).css('background-image', 'url("-.png")');				
+			$(this).data('zoom', '-');				
+		}
+		else {	//Shrink 
+		    $(this).css('margin-bottom', '160px');
+			$(this).siblings('.yt').css('width', '325px');
+			$(this).siblings('.yt').css('height', '200px');
+			$(this).css('background-image', 'url("+.png")');	
+			$(this).data('zoom', '+');				
+		}
+	});
+	
+	
+	//------------------------------------------------------------------------------
+	// BEGIN SETTINGS
+	//--------------------------------------------------------------
+	//Handle the opening and closing of the settings
+	function openCloseSettings() {
+		//$('#cover').toggleClass('collapse');	
+	    $('#settings').toggleClass('collapse');			
+		
+		var item = document.querySelector("#cover");
+	
+		if(!portraitOpen)
+		    $('#back-li').toggleClass('hide');
+		else 
+		    $('#portrait').toggleClass('collapse');
+			
+		//$('#cover').css('visibility', 'visible')
+		//$('#cover').addClass('animated slideInLeft');
+		
+		//$('.scrolling').toggleClass('collapse');		
+		//$('#settings').animate({width:'toggle'},300);		
+
+		//$('.shadow').toggleClass('hide');
+		if(!settingsOpen) {
+		    //scrollContainer[0].scrollTop = 0;
+			//$('#changeNameInput').focus();	
+			$('#changeNameInput').val(name);
+			$('#connectName').text("Settings");
+			
+			$('#colorChangeNameInput').val(nameColor);
+			$('#colorNamePreview').css('background', '#' + nameColor);
+			$('#colorChangeTextInput').val(textColor);
+			$('#colorTextPreview').css('background', '#' + textColor);	
+			item.style[transformProperty] = 'translate3d(-100%, 0px, 0px)';
+		}
+		else {
+			//scrollContainer[0].scrollTop = scrollContainer[0].scrollHeight;	
+			//$('#messageInput').focus();
+			$('#connectName').text(name);
+			item.style[transformProperty] = 'translate3d(0%, 0px, 0px)';
+		}
+		settingsOpen = !settingsOpen;	 
+	}
+	
+	//Close the collapsed navbar to access the settings
+	$('#settings-li').on('click', function() {
+        $('.navbar-collapse').collapse('hide');
+	});
+
+	//Perform the steps to fully change your name if you changed it
+	function changeName() {
+		var tempName = $('#changeNameInput').val();
+		if(tempName != "") {
+			name = tempName;
+			setCookie("name", name, 1);		
+			$('#connectName').text(name);				
+			if(connected) {
+				var guid = getCookie('guid');						  
+				socket.emit('new display name', name, guid);
+			}
+		}
+	}
+
+	//Check to see if it's a hex color
+	function isHexColor(color) {
+	   return /(^#[0-9A-F]{6}$)|(^#[0-9A-F]{3}$)/i.test(color);
+	}
+	
+	//Perform the steps to fully change a color if you changed it
+	function changeColor(choice){
+		var tempColor;
+		if(choice == "Name")
+			tempColor = $('#colorChangeNameInput').val();
+		else
+			tempColor = $('#colorChangeTextInput').val();
+			
+		if(isHexColor("#" + tempColor)) {
+			if(choice == "Name") {
+				nameColor = tempColor;
+				setCookie("nameColor", nameColor, 1);
+			}
+			else {
+				textColor = tempColor;
+				setCookie("textColor", textColor, 1);
+				$('#messageInput').css('color', '#'+textColor);
+			}
+		}
+	}
+	
+	//Dynamically change the preview for the name color as you type valid hex colors
+	$('#colorChangeNameInput').on('input', function() {
+		if(isHexColor("#" + $(this).val()))
+			$('#colorNamePreview').css('background', '#' + $(this).val());
+	});
+	//Dynamically change the preview for the text color as you type valid hex colors
+	$('#colorChangeTextInput').on('input', function() {
+		if(isHexColor("#" + $(this).val()))
+			$('#colorTextPreview').css('background', '#' + $(this).val());
+	});	
+	
+	//When you change some settings and click Apply
+	$('#changeSettingsButton').click(function() {
+		changeName();
+		changeColor("Name");
+		changeColor("Text"); 
+		$('#back-li').toggleClass('hide');
+		$('#connectName').text(name);
+		var item = document.querySelector("#cover");
+		item.style[transformProperty] = 'translate3d(0%, 0px, 0px)';
+		$('#settings').toggleClass('collapse');			
+		//$('#cover').toggleClass('collapse');	
+		//$('#messageInput').focus();	
+		settingsOpen = false;
+	});
+	
+	//Allows you to press enter on the change name box and it will click Apply
+	$('#changeNameInput').keypress(function(e) {
+		if(e.which == 13)
+			$('#changeSettingsButton').click();
+	});
+	//Allows you to press enter on the change name color box and it will click Apply
+	$('#colorChangeNameInput').keypress(function(e) {
+		if(e.which == 13)
+			$('#changeSettingsButton').click();
+	});
+	//Allows you to press enter on the change text color box and it will click Apply
+	$('#colorChangeTextInput').keypress(function(e) {
+		if(e.which == 13)
+			$('#changeSettingsButton').click();
+	});	
+	//--------------------------------------------------------------
+	// END SETTINGS
+	//------------------------------------------------------------------------------
+	
+	//Handle the back button functionality
+	function goBack() {
+	   $('#back-li').toggleClass('hide');
+	   //$('#cover').toggleClass('collapse');
+		scrollContainer[0].scrollTop = scrollContainer[0].scrollHeight;	
+		//$('#messageInput').focus();
+		$('#connectName').text(name);
+	   var item = document.querySelector("#cover");
+	   item.style[transformProperty] = 'translate3d(0%, 0px, 0px)';
+	   
+	   if(settingsOpen) {
+	       $('#settings').toggleClass('collapse');
+			settingsOpen = false;
+	   }
+	   else {
+	       $('#portrait').toggleClass('collapse');
+		   portraitOpen = false;
+	   }
+	}
+	
+	//------------------------------------------------------------------------------
+	// BEGIN IMAGE HANDLING
+	//--------------------------------------------------------------	
+	//Display the clicked image in its full size
+		$(document).on('click', '.img', function() {
+		    portraitOpen = true;
+			//$('#cover').toggleClass('collapse');
+			$('#portrait').toggleClass('collapse');
+			$('#back-li').toggleClass('hide');
+			var item = document.querySelector("#cover");
+			item.style[transformProperty] = 'translate3d(-100%, 0px, 0px)';
+			
+			$('#connectName').text("Image");
+			
+		    //$('#portrait').empty();		
+			//$('#portrait').append(($(this).children('img').eq(0)).clone());	
+			var src = $(this).find('img').prop('src');
+			$('#portrait img').attr('src', src);
+			
+			//$('#portrait img').addClass('img-responsive');
+			//var height = $('#portrait img')[0].naturalHeight;		
+			//var width = $('#portrait img')[0].naturalWidth;	
+		});
+	//--------------------------------------------------------------
+	// END IMAGE HANDLING
+	//------------------------------------------------------------------------------
+	
+	
+	function getSupportedPropertyName(properties) {
+		for (var i = 0; i < properties.length; i++) {
+			if (typeof document.body.style[properties[i]] != "undefined") {
+				return properties[i];
+			}
+		}
+		return null;
+	}
+	var transform = ["transform", "msTransform", "webkitTransform", "mozTransform", "oTransform"];
+	var transformProperty;
+	
+	
+	//------------------------------------------------------------------------------
+	// BEGIN FLOOD CONTROL
+	//--------------------------------------------------------------	
+	//Close the flood control message (called from either a click or 4s delay from visible)
+	function closeFloodBubble() {
+		if(floodControlOn) {
+			floodControlOn = false;
+			//$('#floodControlBubble').addClass('animated fadeOutDown');	
+			//$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+			//	$('#floodControlBubble').removeClass();
+			//	$('#floodControlContainer').css('visibility', 'hidden');
+			//});	
+			//$('#flood-control').addClass('hidden');
+		    var item = document.querySelector("#flood-control");
+		    item.style[transformProperty] = 'translate3d(0px, 0px, 0px)';
+			$('#flood-control').css('visibility', 'hidden');
+		}
+	}	
+	//Close the flood control message when you click it
+	$('#flood-control').click(function() {
+		closeFloodBubble();
+		
+	});
+	//--------------------------------------------------------------
+	// END FLOOD CONTROL
+	//------------------------------------------------------------------------------
+	
+	
+	//On page ready, set up name variable and connected users
+	$( document ).ready(function() {		
+		var guid = getCookie('guid');
+		if(guid == '') {
+			guid = setGUID();
+			//setCookie('guid', guid, 1);
+			document.cookie = 'guid='+guid+'; path=/';
+		}
+		$('#connectName').text('____');
+		getColors();
+		transformProperty = getSupportedPropertyName(transform);
+	});
+	
+	function setGUID() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+		}
+		
+		var id = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+		return id;
+	}
+	
+	//Check if the window is active or not
+	window.onfocus = function() {
+		activeWindow = true;
+		unreadMessages = 0;
+		document.title = 'Chat';
+		getColors();  ///In case something changed if you have two tabs open
+	}
+	window.onblur = function() { activeWindow = false; }
+	
+
+	//------------------------------------------------------------------------------
+	// BEGIN TIMESTAMPS
+	//--------------------------------------------------------------		
+	//Add the correct HTML to the timestamp
+	var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Aug', 'Oct', 'Nov', 'Dec'];		
+	function setTimestamp(timestampEle) {
+		var date = new Date($(timestampEle).data('time'));
+		var day = date.getDate();
+		var monthI = date.getMonth();
+		var month = monthNames[monthI];
+		var year = date.getFullYear();
+		var hour = date.getHours();
+		var min = date.getMinutes();
+		var amPM = "AM";
+		
+		if(hour >= 12) {
+			hour -= 12;
+			amPM = "PM";
+		}	
+		if(hour == 0)
+			hour = 12;			
+		if(min < 10)
+		   min = '0'+min;
+		
+		$(timestampEle).html('<span class="yest">Yesterday&nbsp;</span><span class="month">' + month + 
+							 '&nbsp;</span><span class="day">' + day + '</span><span class="year">,&nbsp;' + year + 
+							 '</span><span class="hour">&nbsp;' + hour + ':</span><span class="min">' + min + 
+							 '&nbsp;</span><span class="amPM">' + amPM + '</span>');
+	}
+	
+	//Toggle the correct elements in the timestamp
+	function formatTimestamp(timestampEle) {
+		var now = new Date();
+		
+		var date = new Date($(timestampEle).data('time'));
+		var day = date.getDate();
+		var monthI = date.getMonth();
+		var month = monthNames[monthI];
+		var year = date.getFullYear();
+		//var hours = date.getHours();
+		//var mins = date.getMinutes();
+		
+		//Check if it's the same year
+		if(year == now.getFullYear()) {
+			$(timestampEle).find('.year').hide();
+			//Check if it's the same month
+			if(monthI == now.getMonth()) {
+				//Check if it's the same day
+				if(day == now.getDate()) {
+					$(timestampEle).find('.month').hide();
+					$(timestampEle).find('.day').hide();
+					$(timestampEle).find('.yest').hide();
+				}
+				//Check if it's yesterday
+				else if(day+1 == now.getDate()) {
+					$(timestampEle).find('.month').hide();
+					$(timestampEle).find('.day').hide();
+					$(timestampEle).find('.yest').show();					
+				}
+				else {
+					$(timestampEle).find('.month').show();
+					$(timestampEle).find('.day').show();
+					$(timestampEle).find('.yest').hide();				
+				}
+			}
+			else {
+				$(timestampEle).find('.month').show();
+				$(timestampEle).find('.day').show();
+				$(timestampEle).find('.yest').hide();				    
+			}			    
+		}
+		else {
+			$(timestampEle).find('.year').show();
+			$(timestampEle).find('.month').show();
+			$(timestampEle).find('.day').show();
+			$(timestampEle).find('.yest').hide();
+		}
+	}
+	//--------------------------------------------------------------
+	// END TIMESTAMPS
+	//------------------------------------------------------------------------------	
+	
+	
+	
+	//Handle the events needed for when you make connection with the server
+	function connectionStart() {
+		$('.navbar').each(function() {
+		    $(this).css('border-top-color', '#00e500');
+		});
+		$('#sendButton').removeClass('btn-danger').addClass('btn-success');
+		
+		var tempName = getCookie("name");			
+		var guid = getCookie('guid');
+		
+		if(tempName != "") {
+			name = tempName;			
+			socket.emit('have display name', name, guid);					
+			$('#connectName').text(name);		
+			socket.emit('need all connections', "pls");
+			socket.emit('need last messages', 'pls');
+		}	 
+		else
+			socket.emit('need guest name', guid);
+	}
+	
+	//Handle the events for if the server goes down
+	function serverDisconnect() {	
+		$('.navbar').each(function() {
+		    $(this).css('border-top-color', '#e50000');
+		});
+		$('#sendButton').removeClass('btn-success').addClass('btn-danger');		
+		$('#connectName').text('____');		
+		
+		$('#messages tfoot > tr').remove();
+		if(numTyping > 0)
+		   clearInterval(interval);
+		numTyping = 0;
+		
+		
+		$('#onlineUsers').empty();
+		$('#onlineUsers').append($('<li>').append($('<a>').attr('href', '#').attr('id', 'none').text("None")));
+	}
+	
+	
+	//------------------------------------------------------------------------------
+	// BEGIN TYPING INDICATORS
+	//--------------------------------------------------------------	
+	//Animation for Typing
+	function type() {
+	    $('.dots').each(function() {
+		   var numD = $(this).data('num');
+		   if(numD < 10) {
+		       $(this).append('.');
+			   $(this).data('num', ++numD);
+			}
+			else {
+			    $(this).text('');
+				$(this).data('num', 0);
+			}			   
+		});
+	}
+	//Remove a specific [user] is typing indicator
+	function removeIndividualTypingIndicator(user) {
+		$('#messages > tfoot tr').each(function(index) {
+			if($(this).find('.infoN').attr("data-id") == user.ID) {
+				$(this).remove();
+				if(--numTyping == 0)
+				   clearInterval(interval);
+			}
+		});
+	}
+	//--------------------------------------------------------------
+	// END TYPING INDICATORS
+	//------------------------------------------------------------------------------	
+	
+	
+	
+	//------------------------------------------------------------------------------
+	// BEGIN SOCKET IDENTIFIERS
+	//--------------------------------------------------------------
+	//For handling the startup of a connection to the server
+	socket.on('connect', function() {
+	   numUsers = 0;
+	   connected = true;
+	   connectionStart();
+	});
+	
+	//For handling the server disconnecting
+	socket.on('disconnect', function() {
+		connected = false;		
+		serverDisconnect();
+		numUsers = 0;		
+	});	
+	
+	//For gathering chat messages and displaying them
+	socket.on('chat message', function(msg) {		
+		//$('#messages tr:last').append(msg);	
+         //$('#messages > tbody:last-child').append(msg);
+		 $('#messages').find('tbody:last').append(msg);
+		setTimestamp($('#messages tr:last').find('.ts'));
+		formatTimestamp($('#messages tr:last').find('.ts'));
+		
+		if($('#autoScrollInput').prop('checked'))
+			scrollContainer[0].scrollTop = scrollContainer[0].scrollHeight;
+		
+		//Notifications in the title			
+		if(!activeWindow) {
+			document.title = '[' + ++unreadMessages + '] Chat';		
+			//$('#messages li:last-child').addClass('unread');      ///////////////////////ANIMATION 
+		}
+	});	
+
+	//For setting your name as a guest with a unique number (you haven't configured a name yet)
+	socket.on('guest name', function(gName) {
+		name = gName;
+		setCookie('name', name, '');
+		$('#connectName').text(name);
+		socket.emit('need all connections', "pls");
+		socket.emit('need last messages', 'pls');
+	});
+	
+	//For if you change names in one active chat tab/window and you need to update the other(s)
+	socket.on('you changed names', function(tempName) {
+		name = tempName;
+		$('#connectName').text(name);
+	});
+	
+	//For getting newly connected users and appending their name to the online users list
+	socket.on('connected user', function(name) {
+	    if(numUsers == 0)
+		   $('#onlineUsers').empty();
+		
+		$('#onlineUsers').append($('<li>').append($('<a>').attr('href', '#').text(name)));		
+		numUsers++;
+		//$('#messages').append('<label class="userLabel">' + name + ' has connected<br></label>');     //////NEED TO IMPLEMENT ////////////////////////////////////
+		if($('#autoScrollInput').prop('checked'))
+			scrollContainer[0].scrollTop = scrollContainer[0].scrollHeight;
+		
+	});
+	
+	//For displaying to the chat when a user disconnects
+	socket.on('disconnected user', function(user) {
+		removeIndividualTypingIndicator(user);
+		//$('#messages').append('<label class="userLabel">' + user.Name + ' has disconnected<br></label>');   /// NEEEEED TO IMPLEMENT //////////////////////////////////////////////
+		//if($('#autoScrollInput').prop('checked'))
+		//	messagesContainer.scrollTop = messagesContainer.scrollHeight;
+	});
+	
+	//For getting all the connected users at once to append to the online users list
+	socket.on('all connections', function(names) {
+		numUsers = 0;
+		$('#onlineUsers').empty();
+		for(var i=0; i<names.length; i++) {
+			$('#onlineUsers').append($('<li>').append($('<a>').attr('href', '#').text(names[i].Name)));
+			numUsers++;
+		}
+		
+		if(numUsers == 0)
+		    $('#onlineUsers').append($('<li>').append($('<a>').attr('href', '#').attr('id', 'none').text("None")));
+	});
+	
+	//For displaying the last messages that are stored on the server
+	socket.on('last messages', function(lastMessages, index, size) {
+		var i;
+		if(lastMessages.length == size)
+			i=index;
+		else
+			i=0;
+			
+		for(var j=0; j<lastMessages.length; j++) {
+			$('#messages').find('tbody:last').append(lastMessages[i]);	 
+			setTimestamp($('#messages tr:last').find('.ts'));
+			formatTimestamp($('#messages tr:last').find('.ts'));
+			//fadeTimestamp($('.msg').last().find('.timestamp'), 8000);			//////////////////////////////////////FADE
+			i=(i+1)%size
+		}
+			
+		if($('#autoScrollInput').prop('checked'))
+			scrollContainer[0].scrollTop = scrollContainer[0].scrollHeight;	
+	});
+	
+	//For telling the user you're send messages too fast
+	socket.on('dropped message', function(msg) {
+		//$('#flood-control').css('visibility', 'visible');	
+		//$('#flood-control').removeClass('hidden');
+	    if(!floodControlOn) {
+		    floodControlOn = true;		
+		    $('#flood-control').css('visibility', 'visible');
+		    var item = document.querySelector("#flood-control");
+		    item.style[transformProperty] = 'translate(0px, -70px)';
+		}
+		//$('#floodControlBubble').addClass('animated fadeInUp');			
+		
+		//$('#floodControlBubble').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {			
+		//	$('#floodControlBubble').removeClass();
+		//	$('#floodControlContainer').css('visibility', 'visible');
+			setTimeout(closeFloodBubble, 4000);
+		//});
+	});
+	
+	//For displaying to the chat when a user is typing
+	socket.on('typing', function(user) {
+		$('#messages').find('tfoot:last').append('<tr class="typing"><td class="infoN" data-name="'+user.Name+'" data-id="'+user.ID+'">' + user.Name + '</td><td><span class="dots" data-num="0"></span></td><td></td></tr>');
+		if(numTyping++ == 0) 
+		    interval = setInterval(type, 400);		
+	});
+	
+	//For removing [user] is typing indicator
+	socket.on('not typing', function(user) {
+		removeIndividualTypingIndicator(user);
+	});
+	
+	socket.on('update ts', function(data) {
+	   $('#messages tr:last').each(function() {
+		  formatTimestamp($(this).find('.ts'));
+	   });
+	});
+	//--------------------------------------------------------------
+	// END SOCKET IDENTIFIERS
+	//------------------------------------------------------------------------------
+	
+	
+	
+	//------------------------------------------------------------------------------
+	// BEGIN COOKIES
+	//--------------------------------------------------------------
+	//Get the values for the name and text colors from cookies
+	function getColors() {
+		var tempNameCol = getCookie("nameColor");
+		var tempTextCol = getCookie("textColor");
+		
+		if(tempNameCol != "")
+			nameColor = tempNameCol;
+		if(tempTextCol != "") {
+			textColor = tempTextCol;
+			$('#messageInput').css('color', '#'+textColor);
+		}
+	}
+	
+	function setCookie(cname, cvalue, exdays) {
+		var d = new Date();
+		d.setTime(d.getTime() + (exdays*24*60*60*1000));
+		var expires = "expires="+d.toUTCString();
+		document.cookie = cname + "=" + cvalue + "; " + expires;
+	} 
+  
+	function getCookie(cname) {
+		var tname = cname + "=";
+		var ca = document.cookie.split(';');
+		for(var i=0; i<ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0)==' ') c = c.substring(1);
+			if (c.indexOf(tname) == 0) return c.substring(tname.length, c.length);
+		}
+		return "";
+	}
+	//--------------------------------------------------------------
+	// END COOKIES
+	//------------------------------------------------------------------------------
+  </script>
+</html>
